@@ -1,6 +1,6 @@
 package tfc.btvr.mixin.common.tracking;
 
-import net.minecraft.core.entity.player.EntityPlayer;
+import net.minecraft.core.entity.player.Player;
 import org.lwjgl.util.vector.Matrix4f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import tfc.btvr.itf.VRPlayerAttachments;
 import tfc.btvr.mp.packets.MatricesPacket;
 
-@Mixin(value = EntityPlayer.class, remap = false)
+@Mixin(value = Player.class, remap = false)
 public class PlayerMixin implements VRPlayerAttachments {
 	@Unique
 	boolean enabled = false;

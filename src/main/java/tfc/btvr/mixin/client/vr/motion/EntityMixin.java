@@ -1,6 +1,6 @@
 package tfc.btvr.mixin.client.vr.motion;
 
-import net.minecraft.client.entity.player.EntityPlayerSP;
+import net.minecraft.client.entity.player.PlayerLocal;
 import net.minecraft.core.entity.Entity;
 import net.minecraft.core.util.helper.MathHelper;
 import net.minecraft.core.world.World;
@@ -25,7 +25,7 @@ public class EntityMixin {
 	@Inject(at = @At("TAIL"), method = "<init>")
 	public void postInit(World world, CallbackInfo ci) {
 		//noinspection ConstantValue
-		isSinglePlayer = (Object) this instanceof EntityPlayerSP;
+		isSinglePlayer = (Object) this instanceof PlayerLocal;
 	}
 	
 	@Inject(at = @At("HEAD"), method = "moveRelative", cancellable = true)

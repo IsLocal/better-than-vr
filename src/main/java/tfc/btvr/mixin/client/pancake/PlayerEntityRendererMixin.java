@@ -1,9 +1,9 @@
 package tfc.btvr.mixin.client.pancake;
 
-import net.minecraft.client.render.entity.PlayerRenderer;
+import net.minecraft.client.render.entity.MobRendererPlayer;
 import net.minecraft.client.render.model.ModelBiped;
 import net.minecraft.client.render.model.ModelPlayer;
-import net.minecraft.core.entity.player.EntityPlayer;
+import net.minecraft.core.entity.player.Player;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Matrix4f;
@@ -20,26 +20,26 @@ import tfc.btvr.math.LwjglMatrixHelper;
 import java.nio.FloatBuffer;
 import java.util.Arrays;
 
-@Mixin(value = PlayerRenderer.class, remap = false)
+@Mixin(value = MobRendererPlayer.class, remap = false)
 public abstract class PlayerEntityRendererMixin {
 	@Shadow
 	private ModelBiped modelBipedMain;
 	
 	@Shadow
-	protected abstract void rotateModel(EntityPlayer entity, float ticksExisted, float headYawOffset, float renderPartialTicks);
+	protected abstract void rotateModel(Player entity, float ticksExisted, float headYawOffset, float renderPartialTicks);
 	
 	@Shadow
-	protected abstract void translateModel(EntityPlayer entity, double x, double y, double z);
+	protected abstract void translateModel(Player entity, double x, double y, double z);
 	
 	@Shadow
-	public abstract void loadEntityTexture(EntityPlayer entity);
+	public abstract void loadEntityTexture(Player entity);
 	
 	private static final FloatBuffer buffer = BufferUtils.createFloatBuffer(4 * 4);
 	
 	@Unique
 	private static void draw(
 			Matrix4f matr,
-			EntityPlayer entity,
+			Player entity,
 			float pct,
 			boolean left,
 			Runnable call
@@ -55,7 +55,7 @@ public abstract class PlayerEntityRendererMixin {
 		
 		GL11.glPushMatrix();
 		GL11.glTranslated(0, 2 / 8f, 0);
-		GL11.glMultMatrix(buffer);
+		GL11.glMultMatrixf(buffer);
 		VRCamera.handMatrix(
 				entity,
 				pct,
@@ -76,9 +76,9 @@ public abstract class PlayerEntityRendererMixin {
 	boolean[] showVs = new boolean[4];
 	
 	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/LivingRenderer;render(Lnet/minecraft/core/entity/EntityLiving;DDDFF)V", shift = At.Shift.AFTER), method = "renderPlayer")
-	public void postDoRenderLiving(EntityPlayer entity, double x, double y, double z, float yaw, float renderPartialTicks, CallbackInfo ci) {
-		modelBipedMain.bipedLeftArm.showModel = showVs[0];
-		modelBipedMain.bipedRightArm.showModel = showVs[1];
+	public void postDoRenderLiving(Player entity, double x, double y, double z, float yaw, float renderPartialTicks, CallbackInfo ci) {
+		modelBipedMain.armLeft.visible = showVs[0];
+		modelBipedMain.armRight.visible = showVs[1];
 		if (modelBipedMain instanceof ModelPlayer) {
 			((ModelPlayer) modelBipedMain).bipedLeftArmOverlay.showModel = showVs[2];
 			((ModelPlayer) modelBipedMain).bipedRightArmOverlay.showModel = showVs[3];
@@ -86,7 +86,7 @@ public abstract class PlayerEntityRendererMixin {
 	}
 	
 	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/LivingRenderer;render(Lnet/minecraft/core/entity/EntityLiving;DDDFF)V"), method = "renderPlayer")
-	public void doRenderLiving(EntityPlayer entity, double x, double y, double z, float yaw, float renderPartialTicks, CallbackInfo ci) {
+	public void doRenderLiving(Player entity, double x, double y, double z, float yaw, float renderPartialTicks, CallbackInfo ci) {
 		VRPlayerAttachments attachments = (VRPlayerAttachments) entity;
 		
 		if (attachments.better_than_vr$enabled()) {
@@ -137,15 +137,15 @@ public abstract class PlayerEntityRendererMixin {
 			
 			GL11.glEnable(GL11.GL_CULL_FACE);
 			
-			showVs[0] = modelBipedMain.bipedLeftArm.showModel;
-			showVs[1] = modelBipedMain.bipedRightArm.showModel;
-			modelBipedMain.bipedLeftArm.showModel = false;
-			modelBipedMain.bipedRightArm.showModel = false;
+			showVs[0] = modelBipedMain.armLeft.visible;
+			showVs[1] = modelBipedMain.armRight.visible;
+			modelBipedMain.armLeft.visible = false;
+			modelBipedMain.armRight.visible = false;
 			if (modelBipedMain instanceof ModelPlayer) {
-				showVs[2] = ((ModelPlayer) modelBipedMain).bipedLeftArmOverlay.showModel;
-				showVs[3] = ((ModelPlayer) modelBipedMain).bipedRightArmOverlay.showModel;
-				((ModelPlayer) modelBipedMain).bipedLeftArmOverlay.showModel = false;
-				((ModelPlayer) modelBipedMain).bipedRightArmOverlay.showModel = false;
+				showVs[2] = ((ModelPlayer) modelBipedMain).bipedLeftArmOverlay.visible;
+				showVs[3] = ((ModelPlayer) modelBipedMain).bipedRightArmOverlay.visible;
+				((ModelPlayer) modelBipedMain).bipedLeftArmOverlay.visible = false;
+				((ModelPlayer) modelBipedMain).bipedRightArmOverlay.visible = false;
 			}
 			
 			GL11.glPopMatrix();

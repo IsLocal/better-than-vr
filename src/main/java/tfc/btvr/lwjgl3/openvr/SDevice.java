@@ -85,7 +85,7 @@ public class SDevice extends Device {
 		VRCompositor.VRCompositor_GetLastPoseForTrackedDeviceIndex(index, p0, null);
 		
 		double[] cursedMatr = MatrixHelper.interpMatrix(pose.mDeviceToAbsoluteTracking(), p0.mDeviceToAbsoluteTracking(), pct);
-		Minecraft mc = Minecraft.getMinecraft(Minecraft.class);
+		Minecraft mc = Minecraft.getMinecraft();
 		if (mc.thePlayer != null) {
 			double delt = VRManager.getRotation(pct);
 			

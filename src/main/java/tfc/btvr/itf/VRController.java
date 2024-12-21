@@ -1,6 +1,6 @@
 package tfc.btvr.itf;
 
-import net.minecraft.core.HitResult;
+import net.minecraft.core.util.phys.HitResult;
 
 public interface VRController {
 	void better_than_vr$activateVRMining(HitResult result);

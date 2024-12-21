@@ -1,7 +1,7 @@
 package tfc.btvr.math;
 
 import org.lwjgl.util.vector.Matrix4f;
-import org.lwjgl.util.vector.Quaternion;
+import tfc.btvr.math.util.Quaternion;
 
 public class LwjglMatrixHelper {
 	protected static float _copysign(float to, float from) {

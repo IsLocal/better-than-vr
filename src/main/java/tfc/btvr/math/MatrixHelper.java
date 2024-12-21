@@ -9,7 +9,7 @@ package tfc.btvr.math;
 import net.minecraft.core.util.helper.MathHelper;
 import org.lwjgl.openvr.HmdMatrix34;
 import org.lwjgl.util.vector.Matrix4f;
-import org.lwjgl.util.vector.Quaternion;
+import tfc.btvr.math.util.Quaternion;
 
 public class MatrixHelper {
 	public static void mulMatr(

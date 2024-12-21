@@ -1,8 +1,8 @@
 package tfc.btvr.mixin.common.tracking;
 
-import net.minecraft.core.entity.player.EntityPlayer;
+import net.minecraft.core.entity.player.Player;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.entity.player.EntityPlayerMP;
+import net.minecraft.server.entity.player.PlayerServer;
 import org.lwjgl.util.vector.Matrix4f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +16,7 @@ import tfc.btvr.itf.VRPlayerAttachments;
 import tfc.btvr.mp.VRSuperPacket;
 import tfc.btvr.mp.packets.MatricesPacket;
 
-@Mixin(value = EntityPlayerMP.class, remap = false)
+@Mixin(value = PlayerServer.class, remap = false)
 public class MPPlayerMixin implements VRPlayerAttachments {
 	@Shadow
 	public MinecraftServer mcServer;
@@ -68,8 +68,8 @@ public class MPPlayerMixin implements VRPlayerAttachments {
 		rotation = packet.getRotation();
 		
 		// client might not send the right id, so recreate the packet
-		VRSuperPacket packet1 = new VRSuperPacket(new MatricesPacket((EntityPlayer) (Object) this));
-		for (EntityPlayerMP playerEntity : this.mcServer
+		VRSuperPacket packet1 = new VRSuperPacket(new MatricesPacket((Player) (Object) this));
+		for (PlayerServer playerEntity : this.mcServer
 				.playerList
 				.playerEntities
 		) {

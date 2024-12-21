@@ -1,6 +1,6 @@
 package tfc.btvr.mp.packets;
 
-import net.minecraft.core.net.handler.NetHandler;
+import net.minecraft.core.net.handler.PacketHandler;
 import tfc.btvr.mp.BaosWrapper;
 
 import java.io.DataInputStream;
@@ -50,5 +50,5 @@ public abstract class VRPacket {
 		return id;
 	}
 	
-	public abstract void handle(NetHandler netHandler);
+	public abstract void handle(PacketHandler netHandler);
 }

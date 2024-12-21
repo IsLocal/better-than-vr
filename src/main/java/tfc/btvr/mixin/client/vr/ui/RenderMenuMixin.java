@@ -1,13 +1,13 @@
 package tfc.btvr.mixin.client.vr.ui;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.player.EntityPlayerSP;
+import net.minecraft.client.entity.player.PlayerLocal;
 import net.minecraft.client.input.PlayerInput;
 import net.minecraft.client.player.controller.PlayerControllerSP;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.camera.EntityCameraFirstPerson;
 import net.minecraft.client.render.camera.ICamera;
-import net.minecraft.core.world.World;
+import net.minecraft.client.world.WorldClient;
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -88,9 +88,6 @@ public abstract class RenderMenuMixin {
 	private float farPlaneDistance;
 	
 	@Shadow
-	private long prevFrameTime;
-	
-	@Shadow
 	public abstract void updateRenderer();
 	
 	@Shadow
@@ -162,8 +159,8 @@ public abstract class RenderMenuMixin {
 			menuWorld = null;
 		}
 		
-		if (menuWorld == null && mc.theWorld != null) return;
-		if (menuWorld != null && mc.theWorld != null) {
+		if (menuWorld == null && mc.currentWorld != null) return;
+		if (menuWorld != null && mc.currentWorld != null) {
 			menuWorld.delete();
 			menuWorld = null;
 			return;
@@ -184,10 +181,10 @@ public abstract class RenderMenuMixin {
 		RenderGlobal renderglobal = mc.renderGlobal;
 		
 		// backup and setup game state
-		EntityPlayerSP tmpP = mc.thePlayer;
-		mc.thePlayer = (EntityPlayerSP) menuWorld.myPlayer;
-		World tmp = mc.theWorld;
-		mc.theWorld = menuWorld.dummy;
+		PlayerLocal tmpP = mc.thePlayer;
+		mc.thePlayer = (PlayerLocal) menuWorld.myPlayer;
+		WorldClient tmp = mc.currentWorld;
+		mc.currentWorld = menuWorld.dummy;
 		ICamera tmpC = mc.activeCamera;
 		ICamera vrC = mc.activeCamera = new EntityCameraFirstPerson(mc, menuWorld.myPlayer);
 		
@@ -211,8 +208,8 @@ public abstract class RenderMenuMixin {
 				
 				mc.playerController = new PlayerControllerSP(mc);
 				menuWorld.myPlayer.heal(20);
-				((EntityPlayerSP) menuWorld.myPlayer).input = new PlayerInput(mc);
-				((EntityPlayerSP) menuWorld.myPlayer).input.tick(menuWorld.myPlayer);
+				((PlayerLocal) menuWorld.myPlayer).input = new PlayerInput(mc);
+				((PlayerLocal) menuWorld.myPlayer).input.tick(menuWorld.myPlayer);
 				menuWorld.myPlayer.tick();
 				
 				// constrain position
@@ -237,9 +234,9 @@ public abstract class RenderMenuMixin {
 				}
 			}
 			
-			menuWorld.myPlayer.xOld = menuWorld.myPlayer.xo;
-			menuWorld.myPlayer.yOld = menuWorld.myPlayer.yo;
-			menuWorld.myPlayer.zOld = menuWorld.myPlayer.zo;
+//			menuWorld.myPlayer.xOld = menuWorld.myPlayer.xo;
+//			menuWorld.myPlayer.yOld = menuWorld.myPlayer.yo;
+//			menuWorld.myPlayer.zOld = menuWorld.myPlayer.zo;
 			
 			menuPct = 1 - ((frameMS - tm) / (float) rate);
 			VRManager.postTick(mc);
@@ -272,11 +269,11 @@ public abstract class RenderMenuMixin {
 		((VRScreenData) mc.currentScreen).better_than_vr$getPosition()[1] = menuWorld.sz + 1;
 		((VRScreenData) mc.currentScreen).better_than_vr$getPosition()[2] = 0.5f;
 		
-		VRCamera.drawUI(mc, menuPct, mc.theWorld == null || mc.theWorld == menuWorld.dummy);
+		VRCamera.drawUI(mc, menuPct, mc.currentWorld == null || mc.theWorld == menuWorld.dummy);
 		
 		// reset game state
 		mc.activeCamera = tmpC;
-		mc.theWorld = tmp;
+		mc.currentWorld = tmp;
 		mc.thePlayer = tmpP;
 		
 		// draw world

@@ -4,22 +4,23 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.EntityRenderDispatcher;
 import net.minecraft.client.render.Lighting;
 import net.minecraft.client.render.RenderGlobal;
-import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.block.model.BlockModel;
 import net.minecraft.client.render.block.model.BlockModelDispatcher;
 import net.minecraft.client.render.camera.ICamera;
-import net.minecraft.client.render.entity.LivingRenderer;
-import net.minecraft.client.render.entity.PlayerRenderer;
-import net.minecraft.core.HitResult;
-import net.minecraft.core.block.Block;
-import net.minecraft.core.entity.EntityLiving;
-import net.minecraft.core.entity.player.EntityPlayer;
+import net.minecraft.client.render.entity.MobRenderer;
+import net.minecraft.client.render.entity.MobRendererPlayer;
+import net.minecraft.client.render.tessellator.Tessellator;
+import net.minecraft.core.block.Blocks;
+import net.minecraft.core.entity.Mob;
+import net.minecraft.core.entity.player.Player;
 import net.minecraft.core.item.Item;
 import net.minecraft.core.item.ItemStack;
+import net.minecraft.core.item.Items;
 import net.minecraft.core.item.tool.ItemTool;
 import net.minecraft.core.item.tool.ItemToolSword;
 import net.minecraft.core.util.phys.AABB;
-import net.minecraft.core.util.phys.Vec3d;
+import net.minecraft.core.util.phys.HitResult;
+import net.minecraft.core.util.phys.Vec3;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.openvr.HmdMatrix34;
@@ -50,7 +51,7 @@ public class VRCamera {
 	}
 	
 	public static void apply(float pct, ICamera instance, float farDist) {
-		Minecraft mc = Minecraft.getMinecraft(Minecraft.class);
+		Minecraft mc = Minecraft.getMinecraft();
 		
 		Eye active = Eye.getActiveEye();
 		int id = 0;
@@ -58,7 +59,7 @@ public class VRCamera {
 			id = active.id;
 		
 		float[] data;
-		if (active != null || mc.theWorld == null) {
+		if (active != null || mc.currentWorld == null) {
 			GL11.glMatrixMode(5889);
 			GL11.glLoadIdentity();
 			
@@ -72,7 +73,7 @@ public class VRCamera {
 			};
 			buffer.put(data);
 			buffer.flip();
-			GL11.glLoadMatrix(buffer);
+			GL11.glLoadMatrixf(buffer);
 //			GL11.glScaled(1, 1, -1);
 		}
 		
@@ -93,7 +94,7 @@ public class VRCamera {
 			};
 			buffer.put(data);
 			buffer.flip();
-			GL11.glMultMatrix(buffer);
+			GL11.glMultMatrixf(buffer);
 		}
 		
 		HmdMatrix34 matr = head.getTrueMatrix();
@@ -102,12 +103,12 @@ public class VRCamera {
 		buffer.put(data);
 		buffer.flip();
 		
-		GL11.glMultMatrix(buffer);
+		GL11.glMultMatrixf(buffer);
 		
 		GL11.glTranslated(matr.m(3) * -1, -matr.m(7), matr.m(11) * -1);
 		
-		EntityPlayer player = mc.thePlayer;
-		if (mc.theWorld == null)
+		Player player = mc.thePlayer;
+		if (mc.currentWorld == null)
 			player = BTVR.getMenuPlayer();
 		
 		if (player != null) {
@@ -125,15 +126,15 @@ public class VRCamera {
 	
 	private static float armScl = 1 / 32f;
 	
-	public static void draw(VRModel model, EntityPlayer player, boolean left, float scale) {
+	public static void draw(VRModel model, Player player, boolean left, float scale) {
 		model.draw(player, left, scale);
 	}
 	
-	public static void renderPlayer(EntityPlayer thePlayer, float renderPartialTicks, RenderGlobal renderGlobal) {
+	public static void renderPlayer(Player thePlayer, float renderPartialTicks, RenderGlobal renderGlobal) {
 		renderPlayer(false, thePlayer, renderPartialTicks, renderGlobal);
 	}
 	
-	public static void handMatrix(EntityPlayer player, double pct, boolean left, SDevice device) {
+	public static void handMatrix(Player player, double pct, boolean left, SDevice device) {
 		HmdMatrix34 matr = device.getMatrix();
 		float[] data = new float[]{
 				matr.m(0), matr.m(4), matr.m(8), 0,
@@ -144,12 +145,12 @@ public class VRCamera {
 		buffer.put(data);
 		buffer.flip();
 		
-		GL11.glMultMatrix(buffer);
+		GL11.glMultMatrixf(buffer);
 		
 		handMatrix(player, pct, left);
 	}
 	
-	public static void handMatrix(EntityPlayer player, double pct, boolean left) {
+	public static void handMatrix(Player player, double pct, boolean left) {
 		GL11.glScaled(left ? 1 : -1, -1, -1);
 		GL11.glRotatef(90, 1, 0, 0);
 		GL11.glRotatef(180, 0, 1, 0);
@@ -166,28 +167,29 @@ public class VRCamera {
 		}
 	}
 	
-	protected static void drawItem(EntityLiving entity, Minecraft mc, boolean leftHanded) {
+	protected static void drawItem(Mob entity, Minecraft mc, boolean leftHanded) {
 		ItemStack itemstack = entity.getHeldItem();
 		if (itemstack != null) {
 			GL11.glPushMatrix();
 			
 			GL11.glTranslatef(-0.0625F, 0.4375F, 0.0625F);
 			float f2;
-			if (itemstack.itemID < Block.blocksList.length && ((BlockModel) BlockModelDispatcher.getInstance().getDispatch(Block.blocksList[itemstack.itemID])).shouldItemRender3d()) {
+			if (itemstack.itemID < Blocks.blocksList.length && ((BlockModel) BlockModelDispatcher.getInstance().getDispatch(Blocks.blocksList[itemstack.itemID])).shouldItemRender3d()) {
 				f2 = 0.5F;
 				GL11.glTranslatef(0.0F, 0.1875F, -0.3125F);
 				f2 *= 0.5F;
 				GL11.glRotatef(45.0F, 1.0F, 0.0F, 0.0F);
 				GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
 				GL11.glScalef(f2, -f2, f2);
-			} else if (itemstack.itemID == Item.toolBow.id) {
+			} else if (itemstack.itemID == Items.TOOL_BOW.id) {
 				f2 = 0.625F;
 				GL11.glTranslatef(0.0F, 0.125F, 0.3125F);
 				GL11.glRotatef(-20.0F, 0.0F, 1.0F, 0.0F);
 				GL11.glScalef(f2, -f2, f2);
 				GL11.glRotatef(-100.0F, 1.0F, 0.0F, 0.0F);
 				GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
-			} else if (Item.itemsList[itemstack.itemID].isFull3D()) {
+//			} else if (Item.itemsList[itemstack.itemID].isFull3D()) {
+			} else if (false) { // TODO
 				f2 = 0.625F;
 				GL11.glTranslatef(0.0F, 0.1875F, 0.0F);
 				GL11.glScalef(f2, -f2, f2);
@@ -211,30 +213,32 @@ public class VRCamera {
 				GL11.glRotatef(20.0F, 0.0F, 0.0F, 1.0F);
 			}
 			
-			EntityRenderDispatcher.instance.itemRenderer.renderItem(entity, itemstack);
+//			EntityRenderDispatcher.instance.itemRenderer.renderItem(entity, itemstack);
+			// TODO:
+			EntityRenderDispatcher.instance.itemRenderer.renderItemInFirstPerson(0.0f);
 			GL11.glPopMatrix();
 		}
 	}
 	
-	public static void renderPlayer(boolean menu, EntityPlayer thePlayer, float renderPartialTicks, RenderGlobal renderGlobal) {
+	public static void renderPlayer(boolean menu, Player thePlayer, float renderPartialTicks, RenderGlobal renderGlobal) {
 		SDevice rightHand = SDevice.getDeviceForRole(DeviceType.RIGHT_HAND);
 		SDevice leftHand = SDevice.getDeviceForRole(DeviceType.LEFT_HAND);
 		
-		Minecraft mc = Minecraft.getMinecraft(Minecraft.class);
+		Minecraft mc = Minecraft.getMinecraft();
 		ICamera camera = mc.activeCamera;
 		
-		EntityPlayer player = mc.thePlayer;
-		if (mc.theWorld == null)
+		Player player = mc.thePlayer;
+		if (mc.currentWorld == null)
 			player = BTVR.getMenuPlayer();
 		
-		if (mc.theWorld != null && camera != null && camera.showPlayer())
+		if (mc.currentWorld != null && camera != null && camera.showPlayer())
 			return;
 		
 		if (thePlayer != null) {
 			EntityRenderDispatcher dispatcher = EntityRenderDispatcher.instance;
-			if (dispatcher.renderEngine == null) dispatcher.renderEngine = mc.renderEngine;
+//			if (dispatcher.renderEngine == null) dispatcher.renderEngine = mc.renderEngine;
 			
-			PlayerRenderer renderer = (PlayerRenderer) (LivingRenderer) dispatcher.getRenderer(thePlayer);
+			MobRendererPlayer renderer = (MobRendererPlayer) (MobRenderer<?>) dispatcher.getRenderer(thePlayer);
 			renderer.loadEntityTexture(thePlayer);
 		} else {
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
@@ -284,7 +288,7 @@ public class VRCamera {
 			GL11.glPushMatrix();
 			handMatrix(thePlayer, renderPartialTicks, !leftHanded, leftHanded ? rightHand : leftHand);
 			
-			AABB UIQuad = new AABB(-2, -1, 0, 2, 1, 0);
+			AABB UIQuad = AABB.getTemporaryBB(-2, -1, 0, 2, 1, 0);
 			GL11.glColor4f(1, 1, 1, 1);
 			
 			GL11.glEnable(GL11.GL_BLEND);
@@ -336,12 +340,12 @@ public class VRCamera {
 		GL11.glEnable(GL11.GL_CULL_FACE);
 	}
 	
-	private static Vec3d a(double[] coord) {
-		return Vec3d.createVector(coord[0], coord[1], coord[2]);
+	private static Vec3 a(double[] coord) {
+		return Vec3.getTempVec3(coord[0], coord[1], coord[2]);
 	}
 	
-	private static Vec3d a(double[] coord0, double[] coord) {
-		return Vec3d.createVector(coord0[0] + coord[0], coord0[1] + coord[1], coord0[2] + coord[2]);
+	private static Vec3 a(double[] coord0, double[] coord) {
+		return Vec3.getTempVec3(coord0[0] + coord[0], coord0[1] + coord[1], coord0[2] + coord[2]);
 	}
 	
 	public static void drawUI(Minecraft mc, float renderPartialTicks, boolean menuWorld) {
@@ -351,8 +355,8 @@ public class VRCamera {
 		Lighting.disable();
 		GL11.glPushMatrix();
 		
-		EntityPlayer player = mc.thePlayer;
-		if (mc.theWorld == null)
+		Player player = mc.thePlayer;
+		if (mc.currentWorld == null)
 			player = BTVR.getMenuPlayer();
 		
 		if (player != null && mc.activeCamera != null) {
@@ -366,11 +370,11 @@ public class VRCamera {
 		GL11.glDisable(GL11.GL_CULL_FACE);
 		
 		double angle = Math.toDegrees(data.better_than_vr$horizontalAngle()) - 180;
-		Vec3d UIPos = a(data.better_than_vr$getPosition());
+		Vec3 UIPos = a(data.better_than_vr$getPosition());
 		double offset = data.better_than_vr$getOffset();
-		AABB UIQuad = new AABB(-2, -1, 0, 2, 1, 0);
+		AABB UIQuad = AABB.getTemporaryBB(-2, -1, 0, 2, 1, 0);
 		
-		GL11.glTranslated(UIPos.xCoord, UIPos.yCoord, UIPos.zCoord);
+		GL11.glTranslated(UIPos.x, UIPos.y, UIPos.z);
 		
 		GL11.glRotated(angle, 0, 1, 0);
 		GL11.glTranslated(0, 0, offset);
@@ -392,7 +396,7 @@ public class VRCamera {
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		
 		
-		Vec3d pos;
+		Vec3 pos;
 		if (player != null) {
 			pos = a(
 					new double[]{player.x, player.bb.minY, player.z},
@@ -401,26 +405,30 @@ public class VRCamera {
 		} else {
 			pos = a(VRHelper.playerRelative(Config.TRACE_HAND.get()));
 		}
-		Vec3d look = a(VRHelper.getTraceVector(Config.TRACE_HAND.get()));
+		Vec3 look = a(VRHelper.getTraceVector(Config.TRACE_HAND.get()));
 		
-		pos = pos.subtract(UIPos);
+//		pos = pos.subtract(UIPos);
+		pos.x -= UIPos.x;
+		pos.y -= UIPos.y;
+		pos.z -= UIPos.z;
 		
-		double[] rot = VecMath.rotate(new double[]{pos.xCoord, pos.zCoord}, Math.toRadians(angle + 180));
-		pos = Vec3d.createVector(rot[0], pos.yCoord, rot[1]);
-		pos = pos.addVector(0, 0, -offset);
+		double[] rot = VecMath.rotate(new double[]{pos.x, pos.z}, Math.toRadians(angle + 180));
+		pos = Vec3.getTempVec3(rot[0], pos.y, rot[1]);
+		pos = pos.add(0, 0, -offset);
 		
-		rot = VecMath.rotate(new double[]{look.xCoord, look.zCoord}, Math.toRadians(angle + 180));
-		look = Vec3d.createVector(rot[0], look.yCoord, rot[1]);
+		rot = VecMath.rotate(new double[]{look.x, look.z}, Math.toRadians(angle + 180));
+		look = Vec3.getTempVec3(rot[0], look.y, rot[1]);
 		
-		HitResult res = UIQuad.func_1169_a(pos, pos.addVector(look.xCoord * -10, look.yCoord * -10, look.zCoord * -10));
+//		HitResult res = UIQuad.func_1169_a(pos, pos.addVector(look.xCoord * -10, look.yCoord * -10, look.zCoord * -10));
+		HitResult res = UIQuad.clip(pos, pos.add(look.x * -10, look.y * -10, look.z * -10));
 		if (res != null) {
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
 			
 			GL11.glBlendFunc(GL11.GL_ONE_MINUS_DST_COLOR, GL11.GL_ZERO);
-			double x = res.location.xCoord;
-			double y = -res.location.yCoord;
+			double x = res.location.x;
+			double y = -res.location.y;
 			
-			x = -res.location.xCoord;
+			x = -res.location.x;
 			if (Double.isNaN(data.better_than_vr$mouseOverride()[0])) {
 				data.better_than_vr$mouseOverride()[0] = (x - UIQuad.minX) / (UIQuad.maxX - UIQuad.minX);
 				data.better_than_vr$mouseOverride()[1] = (y - UIQuad.minY) / (UIQuad.maxY - UIQuad.minY);

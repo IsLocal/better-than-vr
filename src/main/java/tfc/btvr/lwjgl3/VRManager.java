@@ -1,7 +1,7 @@
 package tfc.btvr.lwjgl3;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.core.entity.player.EntityPlayer;
+import net.minecraft.core.entity.player.Player;
 import org.lwjgl.openvr.*;
 import org.lwjgl.system.MemoryStack;
 import tfc.btvr.BTVR;
@@ -65,7 +65,7 @@ public class VRManager {
 				break;
 		}
 		
-		Minecraft mc = Minecraft.getMinecraft(Minecraft.class);
+		Minecraft mc = Minecraft.getMinecraft();
 		
 		Bindings.renderTick(mc);
 	}
@@ -85,7 +85,7 @@ public class VRManager {
 	public static void postTick(Minecraft mc) {
 		oYAddRot = yAddRot;
 		
-		EntityPlayer player = mc.thePlayer;
+		Player player = mc.thePlayer;
 		if (player == null)
 			player = BTVR.getMenuPlayer();
 		if (player == null) return;
@@ -127,8 +127,8 @@ public class VRManager {
 		player.verticalCollision = vc;
 		player.onGround = oog;
 		
-		player.xOld = player.xo -= (x - player.x);
-		player.zOld = player.zo -= (z - player.z);
+		player.xo -= (x - player.x);
+		player.zo -= (z - player.z);
 		
 		ox = tx;
 		oz = tz;

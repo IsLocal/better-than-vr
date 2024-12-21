@@ -1,8 +1,8 @@
 package tfc.btvr.mp.packets;
 
 import net.minecraft.core.entity.Entity;
-import net.minecraft.core.entity.player.EntityPlayer;
-import net.minecraft.core.net.handler.NetHandler;
+import net.minecraft.core.entity.player.Player;
+import net.minecraft.core.net.handler.PacketHandler;
 import org.lwjgl.util.vector.Matrix4f;
 import tfc.btvr.itf.NetHandlerAccessor;
 import tfc.btvr.itf.VRPlayerAttachments;
@@ -25,7 +25,7 @@ public class MatricesPacket extends VRPacket {
 		super(ID);
 	}
 	
-	public MatricesPacket(EntityPlayer player) {
+	public MatricesPacket(Player player) {
 		super(ID);
 		this.playerId = player.id;
 		this.m0 = ((VRPlayerAttachments) player).better_than_vr$getMatrix(0);
@@ -99,11 +99,11 @@ public class MatricesPacket extends VRPacket {
 	}
 	
 	@Override
-	public void handle(NetHandler netHandler) {
+	public void handle(PacketHandler netHandler) {
 		NetHandlerAccessor accessor = (NetHandlerAccessor) netHandler;
 		
 		if (accessor.better_than_vr$isServer()) {
-			EntityPlayer player = accessor.better_than_vr$getPlayer();
+			Player player = accessor.better_than_vr$getPlayer();
 			((VRPlayerAttachments) player).better_than_vr$handleMatricies(this);
 		} else {
 			Entity e = accessor.better_than_vr$getEntity(playerId);

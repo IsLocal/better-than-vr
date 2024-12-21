@@ -1,8 +1,8 @@
 package tfc.btvr.mixin.client.vr.core;
 
-import net.minecraft.client.GameResolution;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.ScaledResolution;
+import net.minecraft.client.gui.Screen;
 import net.minecraft.client.option.GameSettings;
 import net.minecraft.client.player.controller.PlayerController;
 import net.minecraft.client.render.Renderer;
@@ -45,10 +45,10 @@ public abstract class MinecraftMixin {
 	
 	@Shadow
 	@Final
-	public GameResolution resolution;
+	public ScaledResolution resolution;
 	
 	@Shadow
-	public GuiScreen currentScreen;
+	public Screen currentScreen;
 	
 	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Renderer;endRenderGame(F)V", shift = At.Shift.AFTER), method = "run")
 	public void postRender(CallbackInfo ci) {

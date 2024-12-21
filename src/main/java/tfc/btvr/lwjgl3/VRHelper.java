@@ -1,7 +1,7 @@
 package tfc.btvr.lwjgl3;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.core.entity.player.EntityPlayer;
+import net.minecraft.core.entity.player.Player;
 import org.lwjgl.openvr.HmdMatrix34;
 import tfc.btvr.BTVR;
 import tfc.btvr.lwjgl3.openvr.SDevice;
@@ -50,9 +50,9 @@ public class VRHelper {
 		cursedMatr[3] -= VRManager.ox;
 		cursedMatr[11] -= VRManager.oz;
 		
-		Minecraft mc = Minecraft.getMinecraft(Minecraft.class);
-		EntityPlayer player = mc.thePlayer;
-		if (mc.theWorld == null)
+		Minecraft mc = Minecraft.getMinecraft();
+		Player player = mc.thePlayer;
+		if (mc.currentWorld == null)
 			player = BTVR.getMenuPlayer();
 		
 		if (player != null) {

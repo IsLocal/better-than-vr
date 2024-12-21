@@ -4,7 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.item.ItemFood;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.util.phys.AABB;
-import net.minecraft.core.util.phys.Vec3d;
+import net.minecraft.core.util.phys.Vec3;
 import org.lwjgl.openvr.HmdMatrix34;
 import tfc.btvr.lwjgl3.VRHelper;
 import tfc.btvr.lwjgl3.generic.DeviceType;
@@ -13,13 +13,14 @@ import tfc.btvr.util.gestures.Gesture;
 
 public class EatingGesture extends Gesture {
 	boolean intersects(AABB box, double[] coord, double[] look, Minecraft mc, double len) {
-		return box.func_1169_a(
-				Vec3d.createVector(
+//		return box.func_1169_a(
+		return box.clip(
+				Vec3.getTempVec3(
 						coord[0] ,
 						coord[1]  - mc.thePlayer.getHeadHeight(),
 						coord[2]
 				),
-				Vec3d.createVector(
+				Vec3.getTempVec3(
 						coord[0] + look[0] * len,
 						coord[1]  - mc.thePlayer.getHeadHeight() + look[1] * len,
 						coord[2]  + look[2] * len
@@ -48,7 +49,7 @@ public class EatingGesture extends Gesture {
 		for (int i = 0; i < vec.length; i++) vec[i] /= 4;
 		
 		double bxSz = 0.1;
-		AABB box = new AABB(
+		AABB box = AABB.getTemporaryBB(
 				hrel[0] + vec[0] - bxSz,
 				hrel[1] + vec[1] - bxSz,
 				hrel[2] + vec[2] - bxSz,
@@ -60,7 +61,7 @@ public class EatingGesture extends Gesture {
 				intersects(box, coord, trace, mc, 0.25) &&
 				intersects(box, coordOld, traceOld, mc, 0.25)
 		) {
-			mc.playerController.useItem(mc.thePlayer, mc.theWorld, stack);
+			mc.playerController.useItem(mc.thePlayer, mc.currentWorld, stack);
 		}
 	}
 }

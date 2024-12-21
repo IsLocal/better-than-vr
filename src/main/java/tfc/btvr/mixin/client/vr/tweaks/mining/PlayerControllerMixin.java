@@ -1,9 +1,9 @@
 package tfc.btvr.mixin.client.vr.tweaks.mining;
 
 import net.minecraft.client.player.controller.PlayerController;
-import net.minecraft.core.HitResult;
-import net.minecraft.core.entity.player.EntityPlayer;
+import net.minecraft.core.entity.player.Player;
 import net.minecraft.core.util.helper.Side;
+import net.minecraft.core.util.phys.HitResult;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -23,7 +23,7 @@ public class PlayerControllerMixin implements VRController {
 	}
 	
 	@Inject(at = @At("HEAD"), method = "destroyBlock")
-	public void finishMining(int x, int y, int z, Side side, EntityPlayer player, CallbackInfoReturnable<Boolean> cir) {
+	public void finishMining(int x, int y, int z, Side side, Player player, CallbackInfoReturnable<Boolean> cir) {
 		vrMiningTicks = 0;
 		result = null;
 	}

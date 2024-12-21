@@ -1,6 +1,6 @@
 package tfc.btvr.util;
 
-import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.Screen;
 
 public class ScreenUtil {
 	public static class Button {
@@ -17,7 +17,7 @@ public class ScreenUtil {
 	
 	public static Button left = new Button(0), right = new Button(1);
 	
-	public static void click(int x, int y, GuiScreen screen, boolean leftPressed, boolean pressed) {
+	public static void click(int x, int y, Screen screen, boolean leftPressed, boolean pressed) {
 		Button update = leftPressed ? left : right;
 		
 		if (update.down == pressed) return;

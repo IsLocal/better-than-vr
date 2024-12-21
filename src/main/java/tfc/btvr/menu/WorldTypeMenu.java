@@ -4,16 +4,17 @@ import net.minecraft.core.world.World;
 import net.minecraft.core.world.biome.Biomes;
 import net.minecraft.core.world.biome.provider.BiomeProvider;
 import net.minecraft.core.world.biome.provider.BiomeProviderSingleBiome;
-import net.minecraft.core.world.config.season.SeasonConfig;
 import net.minecraft.core.world.generate.chunk.ChunkGenerator;
-import net.minecraft.core.world.season.Seasons;
-import net.minecraft.core.world.type.WorldTypeOverworld;
-import net.minecraft.core.world.weather.Weather;
-import net.minecraft.core.world.wind.WindManagerGeneric;
+import net.minecraft.core.world.type.overworld.WorldTypeOverworld;
+import net.minecraft.core.world.weather.Weathers;
 
 public class WorldTypeMenu extends WorldTypeOverworld {
 	public WorldTypeMenu(String languageKey) {
-		super(languageKey, Weather.overworldClear, new WindManagerGeneric(), SeasonConfig.builder().withSingleSeason(Seasons.OVERWORLD_SUMMER).build());
+//		super(languageKey, Weathers.OVERWORLD_CLEAR, new WindManagerGeneric(), SeasonConfig.builder().withSingleSeason(Seasons.OVERWORLD_SUMMER).build());
+		super(
+				Properties.of(languageKey)
+						.defaultWeather(Weathers.OVERWORLD_CLEAR)
+		);
 	}
 	
 	public int getMinY() {

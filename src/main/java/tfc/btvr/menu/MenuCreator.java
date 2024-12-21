@@ -1,7 +1,7 @@
 package tfc.btvr.menu;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.core.entity.player.EntityPlayer;
+import net.minecraft.core.entity.player.Player;
 import net.minecraft.core.world.World;
 
 import java.io.ByteArrayOutputStream;
@@ -19,9 +19,9 @@ public class MenuCreator {
 	}
 	
 	public static void create(int size) throws IOException {
-		Minecraft mc = Minecraft.getMinecraft(Minecraft.class);
-		EntityPlayer player = mc.thePlayer;
-		World world = mc.theWorld;
+		Minecraft mc = Minecraft.getMinecraft();
+		Player player = mc.thePlayer;
+		World world = mc.currentWorld;
 		
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		GZIPOutputStream gzos = new GZIPOutputStream(baos);
@@ -30,14 +30,14 @@ public class MenuCreator {
 			for (int y = -size; y <= size; y++) {
 				for (int z = -size; z <= size; z++) {
 					writeInt(gzos, world.getBlockId(
-							(int) player.getPosition(0).xCoord + x,
-							(int) player.getPosition(0).yCoord + y,
-							(int) player.getPosition(0).zCoord + z
+							(int) player.getPosition(0, false).x + x,
+							(int) player.getPosition(0, false).y + y,
+							(int) player.getPosition(0, false).z + z
 					));
 					gzos.write(world.getBlockMetadata(
-							(int) player.getPosition(0).xCoord + x,
-							(int) player.getPosition(0).yCoord + y,
-							(int) player.getPosition(0).zCoord + z
+							(int) player.getPosition(0, false).x + x,
+							(int) player.getPosition(0, false).y + y,
+							(int) player.getPosition(0, false).z + z
 					));
 				}
 			}

@@ -1,9 +1,9 @@
 package tfc.btvr.lwjgl3;
 
-import net.minecraft.client.GameResolution;
+import net.minecraft.client.ScaledResolution;
 import net.minecraft.client.render.Framebuffer;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.Texture;
+import net.minecraft.client.render.tessellator.Tessellator;
+import net.minecraft.client.render.texture.Texture;
 import org.lwjgl.opengl.ARBFramebufferObject;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.openvr.VRCompositor;
@@ -58,11 +58,11 @@ public class VRRenderManager {
 	private static int renderHeight = 0;
 	
 	private static final Framebuffer UIFbo = new Framebuffer();
-	private static final net.minecraft.client.render.Texture UITex = new Texture();
-	private static final net.minecraft.client.render.Texture UIDep = new Texture();
+	private static final Texture UITex = new Texture();
+	private static final Texture UIDep = new Texture();
 	private static final Framebuffer overlayFbo = new Framebuffer();
-	private static final net.minecraft.client.render.Texture overlayTex = new Texture();
-	private static final net.minecraft.client.render.Texture overlayDep = new Texture();
+	private static final Texture overlayTex = new Texture();
+	private static final Texture overlayDep = new Texture();
 	
 	private static double pct;
 	
@@ -70,19 +70,22 @@ public class VRRenderManager {
 		return pct;
 	}
 	
-	public static void startFrame(GameResolution resolution, double renderScale, boolean useLinearFiltering, double pct) {
+	public static void startFrame(ScaledResolution resolution, double renderScale, boolean useLinearFiltering, double pct) {
 		VRRenderManager.pct = pct;
 		
-		int scaledWidth = (int) (renderScale * (double) resolution.width);
-		int scaledHeight = (int) (renderScale * (double) resolution.height);
-		if (fbWidth != resolution.width || fbHeight != resolution.height || renderWidth != scaledWidth || renderHeight != scaledHeight) {
+		int width = resolution.getWidthScreenCoords();
+		int height = resolution.getHeightScreenCoords();
+		
+		int scaledWidth = (int) (renderScale * width);
+		int scaledHeight = (int) (renderScale * height);
+		if (fbWidth != width || fbHeight != height || renderWidth != scaledWidth || renderHeight != scaledHeight) {
 			if (!UITex.isGenerated()) UITex.generate();
 			if (!UIDep.isGenerated()) UIDep.generate();
 			if (!overlayTex.isGenerated()) overlayTex.generate();
 			if (!overlayDep.isGenerated()) overlayDep.generate();
 			
-			fbWidth = resolution.width;
-			fbHeight = resolution.height;
+			fbWidth = width;
+			fbHeight = height;
 			renderWidth = scaledWidth;
 			renderHeight = scaledHeight;
 			int filterMode = useLinearFiltering ? 9729 : 9728;

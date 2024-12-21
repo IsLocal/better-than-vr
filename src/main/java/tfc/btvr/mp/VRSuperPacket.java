@@ -1,6 +1,6 @@
 package tfc.btvr.mp;
 
-import net.minecraft.core.net.handler.NetHandler;
+import net.minecraft.core.net.handler.PacketHandler;
 import net.minecraft.core.net.packet.Packet;
 import tfc.btvr.mp.packets.VRPacket;
 
@@ -29,7 +29,7 @@ public class VRSuperPacket extends Packet {
 	}
 	
 	@Override
-	public void readPacketData(DataInputStream dataInputStream) throws IOException {
+	public void read(DataInputStream dataInputStream) throws IOException {
 		byte id = dataInputStream.readByte();
 		this.packet = VRPacket.decode(id, dataInputStream);
 		
@@ -38,7 +38,7 @@ public class VRSuperPacket extends Packet {
 	}
 	
 	@Override
-	public void writePacketData(DataOutputStream dataOutputStream) throws IOException {
+	public void write(DataOutputStream dataOutputStream) throws IOException {
 		if (err != null) throw err;
 		
 		dataOutputStream.write((byte) packet.getId());
@@ -46,12 +46,12 @@ public class VRSuperPacket extends Packet {
 	}
 	
 	@Override
-	public void processPacket(NetHandler netHandler) {
-		packet.handle(netHandler);
+	public void handlePacket(PacketHandler packetHandler) {
+		packet.handle(packetHandler);
 	}
 	
 	@Override
-	public int getPacketSize() {
+	public int getEstimatedSize() {
 		return data.size() + 1;
 	}
 }

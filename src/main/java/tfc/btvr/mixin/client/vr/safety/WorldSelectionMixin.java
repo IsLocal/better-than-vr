@@ -1,6 +1,6 @@
 package tfc.btvr.mixin.client.vr.safety;
 
-import net.minecraft.client.gui.GuiSelectWorld;
+import net.minecraft.client.gui.ScreenSelectWorld;
 import org.lwjgl.openvr.VRCompositor;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import tfc.btvr.lwjgl3.BTVRSetup;
 
-@Mixin(value = GuiSelectWorld.class, remap = false)
+@Mixin(value = ScreenSelectWorld.class, remap = false)
 public class WorldSelectionMixin {
 	@Inject(at = @At("HEAD"), method = "selectWorld")
 	public void preSelect(int i, CallbackInfo ci) {

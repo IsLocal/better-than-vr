@@ -1,10 +1,10 @@
 package tfc.btvr.util.gestures.immersion;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.core.HitResult;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.item.tool.ItemTool;
-import net.minecraft.core.util.phys.Vec3d;
+import net.minecraft.core.util.phys.HitResult;
+import net.minecraft.core.util.phys.Vec3;
 import org.lwjgl.openvr.HmdMatrix34;
 import tfc.btvr.itf.VRController;
 import tfc.btvr.lwjgl3.VRHelper;
@@ -14,13 +14,13 @@ import tfc.btvr.util.gestures.Gesture;
 
 public class MiningGesture extends Gesture {
 	HitResult traceBlock(double[] coord, double[] look, Minecraft mc, double len) {
-		return mc.theWorld.checkBlockCollisionBetweenPoints(
-				Vec3d.createVector(
+		return mc.currentWorld.checkBlockCollisionBetweenPoints(
+				Vec3.getTempVec3(
 						coord[0] + mc.thePlayer.x,
 						coord[1] + mc.thePlayer.bb.minY - mc.thePlayer.getHeadHeight(),
 						coord[2] + mc.thePlayer.z
 				),
-				Vec3d.createVector(
+				Vec3.getTempVec3(
 						coord[0] + mc.thePlayer.x + look[0] * len,
 						coord[1] + mc.thePlayer.bb.minY - mc.thePlayer.getHeadHeight() + look[1] * len,
 						coord[2] + mc.thePlayer.z + look[2] * len
@@ -29,13 +29,13 @@ public class MiningGesture extends Gesture {
 	}
 	
 	boolean inBlock(double[] coord, double[] look, Minecraft mc, double len) {
-		return mc.theWorld.checkBlockCollisionBetweenPoints(
-				Vec3d.createVector(
+		return mc.currentWorld.checkBlockCollisionBetweenPoints(
+				Vec3.getTempVec3(
 						coord[0] + mc.thePlayer.x,
 						coord[1] + mc.thePlayer.bb.minY - mc.thePlayer.getHeadHeight(),
 						coord[2] + mc.thePlayer.z
 				),
-				Vec3d.createVector(
+				Vec3.getTempVec3(
 						coord[0] + mc.thePlayer.x + look[0] * len,
 						coord[1] + mc.thePlayer.bb.minY - mc.thePlayer.getHeadHeight() + look[1] * len,
 						coord[2] + mc.thePlayer.z + look[2] * len
@@ -74,7 +74,8 @@ public class MiningGesture extends Gesture {
 					if (mc.thePlayer.gamemode.doBlockBreakingAnim()) {
 						mc.playerController.continueDestroyBlock(
 								result.x, result.y, result.z,
-								result.side
+								result.side,
+								result.x, result.y // TODO: ?
 						);
 					} else {
 						mc.playerController.destroyBlock(

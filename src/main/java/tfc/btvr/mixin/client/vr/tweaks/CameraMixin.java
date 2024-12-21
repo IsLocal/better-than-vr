@@ -1,10 +1,7 @@
 package tfc.btvr.mixin.client.vr.tweaks;
 
 import net.minecraft.client.render.camera.EntityCamera;
-import net.minecraft.core.entity.EntityLiving;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -17,10 +14,6 @@ import tfc.btvr.math.MathHelper;
 
 @Mixin(value = EntityCamera.class, remap = false)
 public class CameraMixin {
-	@Shadow
-	@Final
-	public EntityLiving entity;
-	
 	@Unique
 	double oxr, xr;
 	@Unique

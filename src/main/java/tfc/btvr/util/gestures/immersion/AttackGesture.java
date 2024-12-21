@@ -4,7 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.entity.Entity;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.item.tool.ItemToolSword;
-import net.minecraft.core.util.phys.Vec3d;
+import net.minecraft.core.util.phys.Vec3;
 import org.lwjgl.openvr.HmdMatrix34;
 import tfc.btvr.lwjgl3.VRHelper;
 import tfc.btvr.lwjgl3.generic.DeviceType;
@@ -14,13 +14,13 @@ import tfc.btvr.util.gestures.GestureController;
 
 public class AttackGesture extends Gesture {
 	boolean intersects(Entity entity, double[] coord, double[] look, Minecraft mc, double len) {
-		return entity.bb.func_1169_a(
-				Vec3d.createVector(
+		return entity.bb.clip(
+				Vec3.getTempVec3(
 						coord[0] + mc.thePlayer.x,
 						coord[1] + mc.thePlayer.bb.minY - mc.thePlayer.getHeadHeight(),
 						coord[2] + mc.thePlayer.z
 				),
-				Vec3d.createVector(
+				Vec3.getTempVec3(
 						coord[0] + mc.thePlayer.x + look[0] * len,
 						coord[1] + mc.thePlayer.bb.minY - mc.thePlayer.getHeadHeight() + look[1] * len,
 						coord[2] + mc.thePlayer.z + look[2] * len
@@ -42,7 +42,7 @@ public class AttackGesture extends Gesture {
 		double[] coordOld = VRHelper.playerRelative(prevMatrix);
 		double[] traceOld = VRHelper.getTraceVector(prevRel);
 		
-		for (Entity entity : mc.theWorld.getLoadedEntityList().toArray(new Entity[0])) {
+		for (Entity entity : mc.currentWorld.getLoadedEntityList().toArray(new Entity[0])) {
 			if (entity == mc.thePlayer) continue;
 			
 			// TODO: force hand damage for off-hand

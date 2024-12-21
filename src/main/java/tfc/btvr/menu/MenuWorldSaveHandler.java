@@ -1,5 +1,6 @@
 package tfc.btvr.menu;
 
+import net.minecraft.client.world.save.SaveHandlerClientMP;
 import net.minecraft.core.world.Dimension;
 import net.minecraft.core.world.World;
 import net.minecraft.core.world.biome.Biomes;
@@ -7,7 +8,6 @@ import net.minecraft.core.world.biome.provider.BiomeProvider;
 import net.minecraft.core.world.biome.provider.BiomeProviderSingleBiome;
 import net.minecraft.core.world.chunk.Chunk;
 import net.minecraft.core.world.chunk.IChunkLoader;
-import net.minecraft.core.world.save.SaveHandlerClientMP;
 
 import java.io.IOException;
 
@@ -35,6 +35,11 @@ public class MenuWorldSaveHandler extends SaveHandlerClientMP {
 			@Override
 			public void saveChunk(World world, Chunk chunk) throws IOException {
 			
+			}
+			
+			@Override
+			public boolean isSaving() {
+				return false;
 			}
 		};
 	}

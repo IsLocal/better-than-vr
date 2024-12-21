@@ -1,7 +1,7 @@
 package tfc.btvr.mixin.client.vr.motion;
 
 import net.minecraft.client.input.PlayerInput;
-import net.minecraft.core.entity.player.EntityPlayer;
+import net.minecraft.core.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -15,7 +15,7 @@ public class KeyboardInputMixin {
 	@Shadow public boolean jump;
 	
 	@Inject(at = @At("TAIL"), method = "tick")
-	public void postTick(EntityPlayer entityplayer, CallbackInfo ci) {
+	public void postTick(Player entityplayer, CallbackInfo ci) {
 		if (!BTVRSetup.checkVR()) return;
 		
 		jump = jump || SVRControllerInput.getInput("gameplay", "Jump");

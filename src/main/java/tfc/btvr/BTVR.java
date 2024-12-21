@@ -1,7 +1,7 @@
 package tfc.btvr;
 
 import net.fabricmc.api.ModInitializer;
-import net.minecraft.core.entity.player.EntityPlayer;
+import net.minecraft.core.entity.player.Player;
 import net.minecraft.core.net.packet.Packet;
 import tfc.btvr.menu.MenuWorld;
 import tfc.btvr.mp.VRSuperPacket;
@@ -26,7 +26,7 @@ public class BTVR implements ModInitializer {
 		}
 	}
 	
-	public static EntityPlayer getMenuPlayer() {
+	public static Player getMenuPlayer() {
 		if (menuWorld != null)
 			return menuWorld.myPlayer;
 		else return null;

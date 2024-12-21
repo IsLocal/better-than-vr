@@ -1,7 +1,7 @@
 package tfc.btvr.mixin.client.vr.safety;
 
 import net.minecraft.client.render.camera.EntityCamera;
-import net.minecraft.core.entity.EntityLiving;
+import net.minecraft.core.entity.Mob;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -13,7 +13,7 @@ import tfc.btvr.lwjgl3.BTVRSetup;
 
 @Mixin(value = EntityCamera.class, remap = false)
 public class CameraMixin {
-	@Shadow @Final public EntityLiving entity;
+	@Shadow @Final public Mob mob;
 	
 	@Inject(at = @At("RETURN"), method = "getY", cancellable = true)
 	public void modulateY(float renderPartialTicks, CallbackInfoReturnable<Double> cir) {
@@ -21,8 +21,8 @@ public class CameraMixin {
 
 		cir.setReturnValue(
 				cir.getReturnValueD() +
-						entity.ySlideOffset * renderPartialTicks +
-						((OSlider)entity).better_than_vr$getOSlide() * (1 - renderPartialTicks)
+						mob.ySlideOffset * renderPartialTicks +
+						((OSlider)mob).better_than_vr$getOSlide() * (1 - renderPartialTicks)
 		);
 	}
 }

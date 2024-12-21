@@ -1,7 +1,7 @@
 package tfc.btvr.mixin.client.vr.ui;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.Screen;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -12,7 +12,7 @@ import tfc.btvr.lwjgl3.BTVRSetup;
 import tfc.btvr.lwjgl3.VRHelper;
 import tfc.btvr.lwjgl3.openvr.SDevice;
 
-@Mixin(value = GuiScreen.class, remap = false)
+@Mixin(value = Screen.class, remap = false)
 public class VRScreenDataMixin implements VRScreenData {
 	@Unique
 	double[] myPos;
@@ -25,7 +25,7 @@ public class VRScreenDataMixin implements VRScreenData {
 	
 	@Inject(at = @At("TAIL"), method = "<init>")
 	public void postInit(CallbackInfo ci) {
-		Minecraft mc = Minecraft.getMinecraft(Minecraft.class);
+		Minecraft mc = Minecraft.getMinecraft();
 		if (mc == null) {
 			myPos = new double[]{0, 2, 0};
 			rotation = 0;

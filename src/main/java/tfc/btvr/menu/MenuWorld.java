@@ -1,19 +1,20 @@
 package tfc.btvr.menu;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.player.EntityPlayerSP;
+import net.minecraft.client.entity.player.PlayerLocal;
 import net.minecraft.client.render.Lighting;
 import net.minecraft.client.render.RenderBlocks;
 import net.minecraft.client.render.RenderGlobal;
-import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.block.model.BlockModel;
 import net.minecraft.client.render.block.model.BlockModelDispatcher;
-import net.minecraft.client.render.block.model.BlockModelRenderBlocks;
+import net.minecraft.client.render.tessellator.Tessellator;
+import net.minecraft.client.render.texture.stitcher.TextureRegistry;
+import net.minecraft.client.world.WorldClient;
 import net.minecraft.core.block.Block;
-import net.minecraft.core.entity.player.EntityPlayer;
+import net.minecraft.core.block.Blocks;
+import net.minecraft.core.entity.player.Player;
 import net.minecraft.core.enums.LightLayer;
 import net.minecraft.core.world.Dimension;
-import net.minecraft.core.world.World;
 import org.lwjgl.opengl.GL11;
 import tfc.btvr.util.config.Config;
 
@@ -23,15 +24,15 @@ import java.util.ArrayList;
 import java.util.zip.GZIPInputStream;
 
 public class MenuWorld {
-	public final World dummy = new World(
+	public final WorldClient dummy = new WorldClient(
 			new MenuWorldSaveHandler(), "renderWorld",
-			0, Dimension.overworld, new WorldTypeMenu("empty.lol")
+			0, Dimension.OVERWORLD, new WorldTypeMenu("empty.lol")
 	);
-	public final RenderBlocks blocks = new RenderBlocks(dummy, dummy);
-	public final EntityPlayer myPlayer;
+	public final RenderBlocks blocks = new RenderBlocks(dummy);
+	public final Player myPlayer;
 	
 	public MenuWorld(Minecraft mc) {
-		myPlayer = new EntityPlayerSP(mc, dummy, mc.session, 0);
+		myPlayer = new PlayerLocal(mc, dummy, mc.session, 0);
 		dummy.entityJoinedWorld(myPlayer);
 		dummy.setWorldTime(0);
 	}
@@ -93,7 +94,7 @@ public class MenuWorld {
 				wrld.sz = 30;
 				for (int x = -30; x <= 30; x++) {
 					for (int z = -30; z <= 30; z++) {
-						wrld.dummy.setBlock(x, 28, z, Block.grass.id);
+						wrld.dummy.setBlock(x, 28, z, Blocks.GRASS.id());
 					}
 				}
 				wrld.myPlayer.setPos(0.5f, 28 + 2 + wrld.myPlayer.heightOffset - 0.99, 0.5f);
@@ -139,7 +140,7 @@ public class MenuWorld {
 		
 		for (int x = -1; x <= 1; x++) {
 			for (int y = -1; y <= 1; y++) {
-				wrld.dummy.setBlock(x, wrld.sz - 2, y, Block.slabStonePolished.id);
+				wrld.dummy.setBlock(x, wrld.sz - 2, y, Blocks.SLAB_STONE_POLISHED.id());
 				wrld.dummy.setBlockMetadata(x, wrld.sz - 2, y, 1);
 				
 				wrld.dummy.setBlock(x, wrld.sz - 1, y, 0);
@@ -162,7 +163,7 @@ public class MenuWorld {
 		}
 		
 		RenderGlobal renderglobal = mc.renderGlobal;
-		renderglobal.changeWorld(wrld.dummy);
+		renderglobal.changeWorld((WorldClient) wrld.dummy);
 		
 		return wrld;
 	}
@@ -172,10 +173,12 @@ public class MenuWorld {
 	int list1 = 0;
 	
 	public void draw(float renderPartialTicks, Minecraft mc) {
-		BlockModelRenderBlocks.setRenderBlocks(blocks);
+//		BlockModelRenderBlocks.setRenderBlocks(blocks);
+		BlockModel.setRenderBlocks(blocks);
 		Tessellator tessellator = Tessellator.instance;
 		
-		mc.renderEngine.bindTexture(mc.renderEngine.getTexture("/terrain.png"));
+//		mc.renderEngine.bindTexture(mc.renderEngine.getTexture("/terrain.png"));
+		TextureRegistry.blockAtlas.bind();
 		Lighting.disable();
 		GL11.glDisable(2884);
 		if (mc.isAmbientOcclusionEnabled()) {
@@ -201,10 +204,10 @@ public class MenuWorld {
 						int id = dummy.getBlockId(x, y + sz, z);
 						if (id == 0) continue;
 						
-						Block blk = Block.getBlock(id);
-						if (blk.getRenderBlockPass() == 0) {
-							BlockModel model = BlockModelDispatcher.getInstance().getDispatch(blk);
-							model.render(blk, x, y + sz, z);
+						Block blk = Blocks.getBlock(id);
+						BlockModel model = BlockModelDispatcher.getInstance().getDispatch(blk);
+						if (model.renderLayer() == 0) {
+							model.render(tessellator, x, y + sz, z);
 						}
 					}
 				}
@@ -227,10 +230,10 @@ public class MenuWorld {
 						int id = dummy.getBlockId(x, y + sz, z);
 						if (id == 0) continue;
 						
-						Block blk = Block.getBlock(id);
-						if (blk.getRenderBlockPass() == 1) {
-							BlockModel model = BlockModelDispatcher.getInstance().getDispatch(blk);
-							model.render(blk, x, y + sz, z);
+						Block blk = Blocks.getBlock(id);
+						BlockModel model = BlockModelDispatcher.getInstance().getDispatch(blk);
+						if (model.renderLayer() == 1) {
+							model.render(tessellator, x, y + sz, z);
 						}
 					}
 				}

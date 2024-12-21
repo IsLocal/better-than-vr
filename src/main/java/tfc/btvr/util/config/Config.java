@@ -3,6 +3,8 @@ package tfc.btvr.util.config;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.options.components.OptionsCategory;
 import net.minecraft.client.gui.options.data.OptionsPage;
+import net.minecraft.core.item.ItemStack;
+import net.minecraft.core.item.Items;
 import tfc.btvr.lwjgl3.BTVRSetup;
 import tfc.btvr.lwjgl3.VRManager;
 import tfc.btvr.lwjgl3.VRMode;
@@ -31,7 +33,10 @@ public class Config {
 	
 	public static OptionsPage getVRPage() {
 		if (VR == null) {
-			VR = new OptionsPage("btvr.gui.options.page.vr.title");
+			VR = new OptionsPage(
+					"btvr.gui.options.page.vr.title",
+					new ItemStack(Items.AMMO_ARROW) // TODO: select an icon?
+			);
 			VR.withComponent(
 					new OptionsCategory("btvr.gui.options.page.vr.category.hands")
 							.withComponent(new EnumOptionComponent<>("btvr.gui.option.page.vr.value.hand.", "btvr.gui.options.page.vr.motion_hand", (v) -> update(MOTION_HAND.value, MOTION_HAND.value = v), () -> MOTION_HAND.value, HandOption.Hand.values(), MOTION_HAND.def))
@@ -61,7 +66,7 @@ public class Config {
 			);
 			register(VR);
 		}
-		VR.initComponents(Minecraft.getMinecraft(Minecraft.class));
+		VR.initComponents(Minecraft.getMinecraft());
 		return VR;
 	}
 	

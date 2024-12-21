@@ -1,7 +1,7 @@
 package tfc.btvr.model;
 
 import net.minecraft.client.render.model.Cube;
-import net.minecraft.core.entity.player.EntityPlayer;
+import net.minecraft.core.entity.player.Player;
 import org.lwjgl.opengl.GL11;
 
 public class VRModel {
@@ -30,14 +30,14 @@ public class VRModel {
 	}
 	
 	protected void drawCube(Cube cube, float scale) {
-		cube.showModel = true;
+		cube.visible = true;
 		GL11.glPushMatrix();
 		GL11.glScalef(scale, scale, scale);
 		cube.render(1);
 		GL11.glPopMatrix();
 	}
 	
-	public void draw(EntityPlayer player, boolean left, float scale) {
+	public void draw(Player player, boolean left, float scale) {
 		Cube c0 = left ? leftArm : rightArm;
 		Cube c1 = left ? leftArmOverlay : rightArmOverlay;
 		

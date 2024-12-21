@@ -1,10 +1,10 @@
 package tfc.btvr.mixin.client.vr.ui;
 
-import net.minecraft.client.GameResolution;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.player.EntityPlayerSP;
-import net.minecraft.client.gui.GuiIngame;
-import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.ScaledResolution;
+import net.minecraft.client.entity.player.PlayerLocal;
+import net.minecraft.client.gui.Screen;
+import net.minecraft.client.gui.hud.HudIngame;
 import net.minecraft.client.input.InputType;
 import net.minecraft.client.input.controller.ControllerInput;
 import net.minecraft.core.Timer;
@@ -21,11 +21,11 @@ import tfc.btvr.lwjgl3.VRRenderManager;
 @Mixin(value = Minecraft.class, remap = false)
 public class MinecraftMixin {
 	@Shadow
-	public GuiScreen currentScreen;
+	public Screen currentScreen;
 	
 	@Shadow
 	@Final
-	public GameResolution resolution;
+	public ScaledResolution resolution;
 	
 	@Shadow
 	public InputType inputType;
@@ -37,10 +37,10 @@ public class MinecraftMixin {
 	public ControllerInput controllerInput;
 	
 	@Shadow
-	public GuiIngame ingameGUI;
+	public HudIngame ingameGUI;
 	
 	@Shadow
-	public EntityPlayerSP thePlayer;
+	public PlayerLocal thePlayer;
 	
 	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Renderer;beginRenderGame(F)V", shift = At.Shift.BEFORE), method = "run")
 	public void preRender(CallbackInfo ci) {

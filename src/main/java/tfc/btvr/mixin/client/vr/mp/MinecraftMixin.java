@@ -1,8 +1,8 @@
 package tfc.btvr.mixin.client.vr.mp;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.player.EntityPlayerSP;
-import net.minecraft.client.net.handler.NetClientHandler;
+import net.minecraft.client.entity.player.PlayerLocal;
+import net.minecraft.client.net.handler.PacketHandlerClient;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -16,10 +16,9 @@ import tfc.btvr.mp.packets.MatricesPacket;
 @Mixin(value = Minecraft.class, remap = false)
 public abstract class MinecraftMixin {
 	@Shadow
-	public abstract NetClientHandler getSendQueue();
+	public PlayerLocal thePlayer;
 	
-	@Shadow
-	public EntityPlayerSP thePlayer;
+	@Shadow public abstract PacketHandlerClient getSendQueue();
 	
 	@Inject(at = @At("TAIL"), method = "runTick")
 	public void postTick(CallbackInfo ci) {
