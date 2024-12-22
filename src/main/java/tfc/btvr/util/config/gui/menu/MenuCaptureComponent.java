@@ -38,7 +38,7 @@ public class MenuCaptureComponent extends ButtonComponent {
 				relativeButtonX, relativeButtonY,
 				hover,
 				I18n.getInstance().translateKey("btvr.gui.option.page.vr.open_menu"),
-				mc.theWorld == null
+				mc.currentWorld == null
 		);
 	}
 }

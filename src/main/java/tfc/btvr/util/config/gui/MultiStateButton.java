@@ -1,12 +1,13 @@
 package tfc.btvr.util.config.gui;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.render.FontRenderer;
+import net.minecraft.client.gui.ButtonElement;
+import net.minecraft.client.render.Font;
+import net.minecraft.client.render.texture.stitcher.TextureRegistry;
 import net.minecraft.core.lang.I18n;
 import org.lwjgl.opengl.GL11;
 
-public class MultiStateButton extends GuiButton {
+public class MultiStateButton extends ButtonElement {
 	private int state;
 	private int states;
 	
@@ -30,7 +31,7 @@ public class MultiStateButton extends GuiButton {
 	
 	public void drawButton(Minecraft mc, int mouseX, int mouseY) {
 		if (this.visible) {
-			FontRenderer fontrenderer = mc.fontRenderer;
+			Font fontrenderer = mc.font;
 			boolean flag = mouseX >= this.xPosition
 					&& mouseY >= this.yPosition
 					&& mouseX < this.xPosition + this.width
@@ -38,7 +39,7 @@ public class MultiStateButton extends GuiButton {
 			int hoverState = this.getButtonState(flag);
 			double sliderPosition = ((this.width / (double) states) * state);
 			
-			GL11.glBindTexture(3553, mc.renderEngine.getTexture("/gui/gui.png"));
+			GL11.glBindTexture(3553, TextureRegistry.guiSpriteAtlas.id());
 			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 			int div = states * 2;
 			

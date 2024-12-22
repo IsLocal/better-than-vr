@@ -18,6 +18,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import tfc.btvr.VRCamera;
 import tfc.btvr.itf.VRScreenData;
+import tfc.btvr.itf.WindowAccessor;
 import tfc.btvr.lwjgl3.BTVRSetup;
 import tfc.btvr.lwjgl3.VRManager;
 import tfc.btvr.lwjgl3.VRRenderManager;
@@ -25,6 +26,7 @@ import tfc.btvr.lwjgl3.generic.Eye;
 import tfc.btvr.lwjgl3.openvr.SEye;
 import tfc.btvr.menu.MenuWorld;
 import tfc.btvr.mixin.client.RenderGlobalAccessor;
+import tfc.btvr.mixin.client.access.ResolutionAccessor;
 import tfc.btvr.util.config.Config;
 import tfc.btvr.util.config.MenuModeOption;
 
@@ -93,7 +95,7 @@ public abstract class RenderMenuMixin {
 	@Shadow
 	private FogManager fogManager;
 	
-	@Inject(at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;currentScreen:Lnet/minecraft/client/gui/GuiScreen;", ordinal = 2), method = "updateCameraAndRender", cancellable = true)
+	@Inject(at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;currentScreen:Lnet/minecraft/client/gui/Screen;", ordinal = 2), method = "updateCameraAndRender", cancellable = true)
 	public void preGetCurrentScreen(float renderPartialTicks, CallbackInfo ci) {
 		if (!BTVRSetup.checkVR()) return;
 		
@@ -101,6 +103,21 @@ public abstract class RenderMenuMixin {
 		if (SEye.getActiveEye() != null) {
 			ci.cancel();
 		} else {
+			if (mc.currentScreen != null) {
+				ResolutionAccessor accessor = ((ResolutionAccessor) mc.resolution);
+				int w = Config.MENU_RES_X;
+				int h = Config.MENU_RES_Y;
+				accessor.setScaledWidth(w / mc.resolution.getScale());
+				accessor.setScaledWidthExact(w / (double) mc.resolution.getScale());
+				accessor.setScaledHeight(h / mc.resolution.getScale());
+				accessor.setScaledHeightExact(h / (double) mc.resolution.getScale());
+				((WindowAccessor) accessor.getGameWindow()).better_than_vr$overrideSize(w, h);
+				w = mc.resolution.getScaledWidthScreenCoords();
+				h = mc.resolution.getScaledHeightScreenCoords();
+				if (mc.currentScreen.width != w || mc.currentScreen.height != h)
+					mc.currentScreen.opened(mc, w, h);
+				GL11.glViewport(0, 0, 1920, 1080);
+			}
 			VRRenderManager.grabUI(false);
 		}
 		GL11.glDepthMask(true);
@@ -110,10 +127,22 @@ public abstract class RenderMenuMixin {
 	public void postRenderWorld(float renderPartialTicks, CallbackInfo ci) {
 		if (!BTVRSetup.checkVR()) return;
 		
+		if (mc.currentScreen != null) {
+			// TODO: pretty sure this is dumb and bad
+			ResolutionAccessor accessor = ((ResolutionAccessor) mc.resolution);
+			int width = ((ResolutionAccessor) mc.resolution).getGameWindow().getWidthPixels();
+			int height = ((ResolutionAccessor) mc.resolution).getGameWindow().getHeightPixels();
+			int scale = mc.resolution.getScale();
+			accessor.setScaledWidth(width / scale);
+			accessor.setScaledWidthExact(width / (double) scale);
+			accessor.setScaledHeight(height / scale);
+			accessor.setScaledHeightExact(height / (double) scale);
+			((WindowAccessor) accessor.getGameWindow()).better_than_vr$overrideSize(-1, -1);
+		}
 		VRRenderManager.releaseUI();
 	}
 	
-	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiIngame;renderGameOverlay(FZII)V", shift = At.Shift.BEFORE), method = "updateCameraAndRender", cancellable = true)
+	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/HudIngame;renderGameOverlay(FZII)V", shift = At.Shift.BEFORE), method = "updateCameraAndRender", cancellable = true)
 	public void preRenderOverlay(float renderPartialTicks, CallbackInfo ci) {
 		// UIs are drawn specially for VR
 		if (SEye.getActiveEye() != null) {
@@ -121,7 +150,7 @@ public abstract class RenderMenuMixin {
 		}
 	}
 	
-	@Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/ItemRenderer;renderItemInFirstPerson(F)V"), method = "setupPlayerCamera")
+	@Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/ItemRenderer;renderItemInFirstPerson(F)V"), method = "renderHand")
 	public void conditionallyRenderItem(ItemRenderer instance, float r) {
 		if (BTVRSetup.checkVR()) return;
 		
@@ -136,7 +165,7 @@ public abstract class RenderMenuMixin {
 		GL11.glDisable(GL11.GL_CULL_FACE);
 		GL11.glDepthMask(true);
 		if (mc.currentScreen == null) return;
-		VRCamera.drawUI(mc, renderPartialTicks, menuWorld != null && mc.theWorld == menuWorld.dummy);
+		VRCamera.drawUI(mc, renderPartialTicks, menuWorld != null && mc.currentWorld == menuWorld.dummy);
 	}
 	
 	@Unique
@@ -233,7 +262,7 @@ public abstract class RenderMenuMixin {
 					menuWorld.myPlayer.moveTo(0.5f, menuWorld.sz * 2, 0.5f, menuWorld.myPlayer.yRot, menuWorld.myPlayer.xRot);
 				}
 			}
-			
+
 //			menuWorld.myPlayer.xOld = menuWorld.myPlayer.xo;
 //			menuWorld.myPlayer.yOld = menuWorld.myPlayer.yo;
 //			menuWorld.myPlayer.zOld = menuWorld.myPlayer.zo;
@@ -269,7 +298,7 @@ public abstract class RenderMenuMixin {
 		((VRScreenData) mc.currentScreen).better_than_vr$getPosition()[1] = menuWorld.sz + 1;
 		((VRScreenData) mc.currentScreen).better_than_vr$getPosition()[2] = 0.5f;
 		
-		VRCamera.drawUI(mc, menuPct, mc.currentWorld == null || mc.theWorld == menuWorld.dummy);
+		VRCamera.drawUI(mc, menuPct, mc.currentWorld == null || mc.currentWorld == menuWorld.dummy);
 		
 		// reset game state
 		mc.activeCamera = tmpC;

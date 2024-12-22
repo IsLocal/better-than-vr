@@ -2,6 +2,7 @@ package tfc.btvr.util.controls;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScreenMainMenu;
+import net.minecraft.client.gui.ScreenPause;
 import net.minecraft.client.gui.container.ScreenContainer;
 import net.minecraft.client.gui.container.ScreenInventory;
 import net.minecraft.client.gui.container.ScreenInventoryCreative;
@@ -61,7 +62,7 @@ public class Bindings {
 			}
 		}
 		
-//		if (mc.currentScreen == null) mc.displayScreen(new HudIngame(mc));
+		if (mc.currentScreen == null) mc.displayScreen(new ScreenPause());
 		else mc.displayScreen(null);
 	}, null, null);
 	private static final VRBinding OPEN_INV = new ButtonBinding("gameplay", "OpenInventory", () -> {

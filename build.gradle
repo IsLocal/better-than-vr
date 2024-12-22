@@ -127,13 +127,42 @@ dependencies {
 	implementation "org.lwjgl:lwjgl-opengl:$lwjglVersion"
 	implementation "org.lwjgl:lwjgl-stb:$lwjglVersion"
 
-	for (File fl : new File("lib").listFiles()) {
-		if (fl.name.contains("sources") || fl.name.contains("javadoc"))
-			implementation files(fl)
-		else extraLibs files(fl)
+	extraLibs "org.lwjgl:lwjgl-openvr"
+	extraLibs "org.lwjgl:lwjgl-ovr"
+
+	for (String s : new String[]{
+//		"natives-freebsd",
+
+		"natives-linux",
+		"natives-linux-arm64",
+//		"natives-linux-arm32",
+//		"natives-linux-ppc64le",
+//		"natives-linux-riscv64",
+
+		"natives-macos",
+//		"natives-macos-arm64",
+
+		"natives-windows",
+//		"natives-windows-arm64",
+		"natives-windows-x86",
+	}) {
+		extraLibs "org.lwjgl:lwjgl-openvr::$s"
+	}
+	for (String s : new String[]{
+		"natives-windows",
+		"natives-windows-x86",
+	}) {
+		extraLibs "org.lwjgl:lwjgl-ovr::$s"
 	}
 
+//	for (File fl : new File("lib").listFiles()) {
+//		if (fl.name.contains("sources") || fl.name.contains("javadoc"))
+//			implementation files(fl)
+//		else extraLibs(files(fl))
+//	}
+
 	configurations.implementation.extendsFrom(configurations.extraLibs)
+	configurations.runtimeOnly.extendsFrom(configurations.extraLibs)
 }
 
 java {
@@ -146,15 +175,22 @@ tasks.withType(JavaCompile).configureEach {
 	options.release.set 8
 }
 
+tasks.withType(Jar.class).configureEach {
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
 jar {
 	from("LICENSE") {
 		rename { "${it}_${archivesBaseName}" }
+	}
+	from {
+		configurations.extraLibs.collect { it.isDirectory() ? it : zipTree(it) }
 	}
 }
 
 configurations.configureEach {
 	// Removes LWJGL2 dependencies
-	exclude group: "org.lwjgl.lwjgl"
+//	exclude group: "org.lwjgl.lwjgl"
 }
 
 processResources {

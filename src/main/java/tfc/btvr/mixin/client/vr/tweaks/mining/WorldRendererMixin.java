@@ -19,13 +19,13 @@ public class WorldRendererMixin {
 	@Shadow
 	private Minecraft mc;
 	
-	@Redirect(method = "renderWorld", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/RenderGlobal;drawBlockBreaking(Lnet/minecraft/client/render/camera/ICamera;Lnet/minecraft/core/HitResult;F)V"))
+	@Redirect(method = "renderWorld", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/RenderGlobal;drawBlockBreaking(Lnet/minecraft/client/render/camera/ICamera;Lnet/minecraft/core/util/phys/HitResult;F)V"))
 	public void redirBreaking(RenderGlobal instance, ICamera k, HitResult block, float x) {
 		HitResult res = ((VRController) mc.playerController).better_than_vr$getResult();
 		instance.drawBlockBreaking(k, res == null ? block : res, x);
 	}
 	
-	@Inject(at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;objectMouseOver:Lnet/minecraft/core/HitResult;", ordinal = 0), method = "renderWorld")
+	@Inject(at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;objectMouseOver:Lnet/minecraft/core/util/phys/HitResult;", ordinal = 0), method = "renderWorld")
 	public void preOMouseOver(float renderPartialTicks, long updateRenderersUntil, CallbackInfo ci) {
 		if (mc.objectMouseOver == null) {
 			HitResult res = ((VRController) mc.playerController).better_than_vr$getResult();

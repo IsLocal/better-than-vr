@@ -2,7 +2,6 @@ package tfc.btvr.mixin.client.vr.core;
 
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.camera.ICamera;
-import org.lwjgl.BufferUtils;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -12,23 +11,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import tfc.btvr.VRCamera;
 import tfc.btvr.lwjgl3.BTVRSetup;
 
-import java.nio.FloatBuffer;
-
 @Mixin(value = WorldRenderer.class, remap = false)
 public class VRCameraMixin {
 	@Shadow
 	private float farPlaneDistance;
-	
-	@Shadow
-	private double cameraZoom;
-	
-	@Shadow
-	private double cameraYaw;
-	
-	@Shadow
-	private double cameraPitch;
-	
-	private static final FloatBuffer buffer = BufferUtils.createFloatBuffer(4 * 4);
 	
 	private static float pct;
 	

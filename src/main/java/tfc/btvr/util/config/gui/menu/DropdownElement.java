@@ -1,13 +1,13 @@
 package tfc.btvr.util.config.gui.menu;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.ButtonElement;
 import tfc.btvr.util.config.gui.helper.MenuHelper;
 
 import java.util.ArrayList;
 import java.util.function.Supplier;
 
-public class DropdownElement extends GuiButton {
+public class DropdownElement extends ButtonElement {
 	boolean open = false;
 	
 	public DropdownElement(int id, int xPosition, int yPosition, int width, int height, String text) {
@@ -22,11 +22,11 @@ public class DropdownElement extends GuiButton {
 		this.drawRect(this.xPosition + 1, this.yPosition + 1, this.xPosition + this.width - 1, this.yPosition + this.height - 1, -6250336);
 		this.drawRect(this.xPosition + 2, this.yPosition + 2, this.xPosition + this.width - 2, this.yPosition + this.height - 2, -16777216);
 		
-		this.drawStringCentered(mc.fontRenderer, this.displayString, (this.xPosition + this.width / 2), this.yPosition + (this.height - 8) / 2, 14737632);
+		this.drawStringCentered(mc.font, this.displayString, (this.xPosition + this.width / 2), this.yPosition + (this.height - 8) / 2, 14737632);
 		
 		if (open) {
 			this.drawRect(this.xPosition, this.yPosition + 20, this.xPosition + this.width, this.yPosition + this.height + 20, 1602191231);
-			this.drawStringCentered(mc.fontRenderer, "1/1", xPosition + (width) / 2, 20 + yPosition + (height - 8) / 2, 14737632);
+			this.drawStringCentered(mc.font, "1/1", xPosition + (width) / 2, 20 + yPosition + (height - 8) / 2, 14737632);
 			
 			MenuHelper.drawButton(
 					mc,

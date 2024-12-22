@@ -1,7 +1,7 @@
 package tfc.btvr.util.config.gui.helper;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiTexturedButton;
+import net.minecraft.client.gui.TexturedButtonElement;
 
 public class MenuHelper {
 	public static void drawButton(
@@ -13,12 +13,12 @@ public class MenuHelper {
 			String text,
 			boolean disabled
 	) {
-		GuiTexturedButton applyL = new GuiTexturedButton(
+		TexturedButtonElement applyL = new TexturedButtonElement(
 				0, "/gui/gui.png", width, 0,
 				0, 86 - 20 * 2 - (disabled ? 20 : 0),
 				20, 20
 		);
-		GuiTexturedButton applyR = new GuiTexturedButton(
+		TexturedButtonElement applyR = new TexturedButtonElement(
 				0, "/gui/gui.png", width, 0,
 				200 - (width / 2), 86 - 20 * 2 - (disabled ? 20 : 0),
 				20, 20
@@ -38,7 +38,7 @@ public class MenuHelper {
 		applyR.drawButton(mc, (!disabled && hover) ? applyR.getX() : -1, applyR.getY());
 		
 		int k = disabled ? 10526880 : (hover ? 16777120 : 14737632);
-		applyL.drawStringCentered(mc.fontRenderer, text, applyL.xPosition + (width / 2), applyL.yPosition + (applyL.height - 8) / 2, k);
+		applyL.drawStringCentered(mc.font, text, applyL.xPosition + (width / 2), applyL.yPosition + (applyL.height - 8) / 2, k);
 	}
 	
 	public static void drawButton(

@@ -1,7 +1,7 @@
 package tfc.btvr.util.config.gui;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiSwitchButton;
+import net.minecraft.client.gui.SwitchElement;
 import net.minecraft.client.gui.options.components.ButtonComponent;
 import net.minecraft.core.lang.I18n;
 
@@ -14,7 +14,7 @@ public class BooleanOptionElement extends ButtonComponent {
 	Consumer<Boolean> setter;
 	Supplier<Boolean> current;
 	Boolean def;
-	protected final GuiSwitchButton button;
+	protected final SwitchElement button;
 	
 	public BooleanOptionElement(String valueKey, String translationKey, Consumer<Boolean> setter, Supplier<Boolean> current, Boolean def) {
 		super(translationKey);
@@ -23,7 +23,7 @@ public class BooleanOptionElement extends ButtonComponent {
 		this.def = def;
 		this.valueKey = valueKey;
 		
-		this.button = new GuiSwitchButton(0, 0, 0, 150, 20, def, "", "");
+		this.button = new SwitchElement(0, 0, 0, 150, 20, def, "", "");
 		this.button.setOn(def);
 		this.button.displayString = I18n.getInstance().translateKey(valueKey + (button.isOn() ? "on" : "off"));
 	}

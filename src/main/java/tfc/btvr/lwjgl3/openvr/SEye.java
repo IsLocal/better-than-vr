@@ -46,7 +46,7 @@ public class SEye extends Eye {
 		
 		if (GL30.glCheckFramebufferStatus(GL30.GL_FRAMEBUFFER) == GL30.GL_FRAMEBUFFER_COMPLETE) {
 			GL11.glViewport(0, 0, w, h);
-			GL11.glClearColor(1, 1, 1, 1f);
+			GL11.glClearColor(0, 1, 1, 1f);
 			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 		}
 		

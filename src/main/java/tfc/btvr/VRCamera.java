@@ -3,21 +3,16 @@ package tfc.btvr;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.EntityRenderDispatcher;
 import net.minecraft.client.render.Lighting;
+import net.minecraft.client.render.LightmapHelper;
 import net.minecraft.client.render.RenderGlobal;
 import net.minecraft.client.render.block.model.BlockModel;
-import net.minecraft.client.render.block.model.BlockModelDispatcher;
 import net.minecraft.client.render.camera.ICamera;
 import net.minecraft.client.render.entity.MobRenderer;
 import net.minecraft.client.render.entity.MobRendererPlayer;
+import net.minecraft.client.render.item.model.ItemModelDispatcher;
 import net.minecraft.client.render.tessellator.Tessellator;
-import net.minecraft.core.block.Blocks;
-import net.minecraft.core.entity.Mob;
 import net.minecraft.core.entity.player.Player;
-import net.minecraft.core.item.Item;
 import net.minecraft.core.item.ItemStack;
-import net.minecraft.core.item.Items;
-import net.minecraft.core.item.tool.ItemTool;
-import net.minecraft.core.item.tool.ItemToolSword;
 import net.minecraft.core.util.phys.AABB;
 import net.minecraft.core.util.phys.HitResult;
 import net.minecraft.core.util.phys.Vec3;
@@ -167,57 +162,69 @@ public class VRCamera {
 		}
 	}
 	
-	protected static void drawItem(Mob entity, Minecraft mc, boolean leftHanded) {
-		ItemStack itemstack = entity.getHeldItem();
-		if (itemstack != null) {
+	protected static void drawItem(Player entity, Minecraft mc, boolean leftHanded, MobRendererPlayer renderer, float pct) {
+//		renderer.drawHeldObject(entity, pct);
+		ItemStack itemstack1 = entity.inventory.getCurrentItem();
+		if (itemstack1 != null) {
 			GL11.glPushMatrix();
-			
-			GL11.glTranslatef(-0.0625F, 0.4375F, 0.0625F);
-			float f2;
-			if (itemstack.itemID < Blocks.blocksList.length && ((BlockModel) BlockModelDispatcher.getInstance().getDispatch(Blocks.blocksList[itemstack.itemID])).shouldItemRender3d()) {
-				f2 = 0.5F;
-				GL11.glTranslatef(0.0F, 0.1875F, -0.3125F);
-				f2 *= 0.5F;
-				GL11.glRotatef(45.0F, 1.0F, 0.0F, 0.0F);
-				GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
-				GL11.glScalef(f2, -f2, f2);
-			} else if (itemstack.itemID == Items.TOOL_BOW.id) {
-				f2 = 0.625F;
-				GL11.glTranslatef(0.0F, 0.125F, 0.3125F);
-				GL11.glRotatef(-20.0F, 0.0F, 1.0F, 0.0F);
-				GL11.glScalef(f2, -f2, f2);
-				GL11.glRotatef(-100.0F, 1.0F, 0.0F, 0.0F);
-				GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
-//			} else if (Item.itemsList[itemstack.itemID].isFull3D()) {
-			} else if (false) { // TODO
-				f2 = 0.625F;
-				GL11.glTranslatef(0.0F, 0.1875F, 0.0F);
-				GL11.glScalef(f2, -f2, f2);
-				GL11.glRotatef(-100.0F, 1.0F, 0.0F, 0.0F);
-				GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
-				if (
-						Item.itemsList[itemstack.itemID] instanceof ItemTool ||
-								Item.itemsList[itemstack.itemID] instanceof ItemToolSword
-				) {
-					GL11.glRotatef(-45.0F, 1.0F, 0.0F, 0.0F);
-					GL11.glRotatef(-30.0F, 0.0F, 0.0F, 1.0F);
-					GL11.glRotatef(5.0F, 0.0F, 1.0F, 0.0F);
-					GL11.glTranslated(0.025, 0, 0);
-				}
-			} else {
-				f2 = 0.375F;
-				GL11.glTranslatef(0.25F, 0.1875F, -0.1875F);
-				GL11.glScalef(f2, f2, f2);
-				GL11.glRotatef(60.0F, 0.0F, 0.0F, 1.0F);
-				GL11.glRotatef(-90.0F, 1.0F, 0.0F, 0.0F);
-				GL11.glRotatef(20.0F, 0.0F, 0.0F, 1.0F);
-			}
-			
-//			EntityRenderDispatcher.instance.itemRenderer.renderItem(entity, itemstack);
-			// TODO:
-			EntityRenderDispatcher.instance.itemRenderer.renderItemInFirstPerson(0.0f);
+			EntityRenderDispatcher dispatcher = EntityRenderDispatcher.instance;
+			BlockModel.setRenderBlocks(dispatcher.itemRenderer.renderBlocksInstance);
+			ItemModelDispatcher.getInstance()
+					.getDispatch(itemstack1)
+					.renderItemThirdPerson(Tessellator.instance, dispatcher.itemRenderer, entity, itemstack1, true);
 			GL11.glPopMatrix();
 		}
+		
+//		ItemStack itemstack = entity.getHeldItem();
+//		if (itemstack != null) {
+//			GL11.glPushMatrix();
+//
+//			GL11.glTranslatef(-0.0625F, 0.4375F, 0.0625F);
+//			float f2;
+//			if (itemstack.itemID < Blocks.blocksList.length && ((BlockModel) BlockModelDispatcher.getInstance().getDispatch(Blocks.blocksList[itemstack.itemID])).shouldItemRender3d()) {
+//				f2 = 0.5F;
+//				GL11.glTranslatef(0.0F, 0.1875F, -0.3125F);
+//				f2 *= 0.5F;
+//				GL11.glRotatef(45.0F, 1.0F, 0.0F, 0.0F);
+//				GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
+//				GL11.glScalef(f2, -f2, f2);
+//			} else if (itemstack.itemID == Items.TOOL_BOW.id) {
+//				f2 = 0.625F;
+//				GL11.glTranslatef(0.0F, 0.125F, 0.3125F);
+//				GL11.glRotatef(-20.0F, 0.0F, 1.0F, 0.0F);
+//				GL11.glScalef(f2, -f2, f2);
+//				GL11.glRotatef(-100.0F, 1.0F, 0.0F, 0.0F);
+//				GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
+////			} else if (Item.itemsList[itemstack.itemID].isFull3D()) {
+//			} else if (false) { // TODO
+//				f2 = 0.625F;
+//				GL11.glTranslatef(0.0F, 0.1875F, 0.0F);
+//				GL11.glScalef(f2, -f2, f2);
+//				GL11.glRotatef(-100.0F, 1.0F, 0.0F, 0.0F);
+//				GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
+//				if (
+//						Item.itemsList[itemstack.itemID] instanceof ItemTool ||
+//								Item.itemsList[itemstack.itemID] instanceof ItemToolSword
+//				) {
+//					GL11.glRotatef(-45.0F, 1.0F, 0.0F, 0.0F);
+//					GL11.glRotatef(-30.0F, 0.0F, 0.0F, 1.0F);
+//					GL11.glRotatef(5.0F, 0.0F, 1.0F, 0.0F);
+//					GL11.glTranslated(0.025, 0, 0);
+//				}
+//			} else {
+//				f2 = 0.375F;
+//				GL11.glTranslatef(0.25F, 0.1875F, -0.1875F);
+//				GL11.glScalef(f2, f2, f2);
+//				GL11.glRotatef(60.0F, 0.0F, 0.0F, 1.0F);
+//				GL11.glRotatef(-90.0F, 1.0F, 0.0F, 0.0F);
+//				GL11.glRotatef(20.0F, 0.0F, 0.0F, 1.0F);
+//			}
+//
+////			EntityRenderDispatcher.instance.itemRenderer.renderItem(entity, itemstack);
+//			// TODO:
+//			EntityRenderDispatcher.instance.itemRenderer.renderItemInFirstPerson(0.0f);
+//			GL11.glPopMatrix();
+//		}
 	}
 	
 	public static void renderPlayer(boolean menu, Player thePlayer, float renderPartialTicks, RenderGlobal renderGlobal) {
@@ -234,11 +241,12 @@ public class VRCamera {
 		if (mc.currentWorld != null && camera != null && camera.showPlayer())
 			return;
 		
+		EntityRenderDispatcher dispatcher = EntityRenderDispatcher.instance;
+		
+		MobRendererPlayer renderer = (MobRendererPlayer) (MobRenderer<?>) dispatcher.getRenderer(thePlayer);
 		if (thePlayer != null) {
-			EntityRenderDispatcher dispatcher = EntityRenderDispatcher.instance;
-//			if (dispatcher.renderEngine == null) dispatcher.renderEngine = mc.renderEngine;
-			
-			MobRendererPlayer renderer = (MobRendererPlayer) (MobRenderer<?>) dispatcher.getRenderer(thePlayer);
+			EntityRenderDispatcher.instance.textureManager = mc.textureManager;
+			renderer.init(EntityRenderDispatcher.instance);
 			renderer.loadEntityTexture(thePlayer);
 		} else {
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
@@ -248,10 +256,8 @@ public class VRCamera {
 		
 		GL11.glDisable(GL11.GL_CULL_FACE);
 		GL11.glColorMask(true, true, true, true);
-		float brightness = 1.0f;
-		if (!mc.fullbright && !menu)
-			brightness = thePlayer.getBrightness(renderPartialTicks);
-		GL11.glColor3f(brightness, brightness, brightness);
+		GL11.glColor3f(1, 1, 1);
+		LightmapHelper.setLightmapCoord(thePlayer.getLightmapCoord(renderPartialTicks));
 		
 		GL11.glPushMatrix();
 		// undo vr offset to get relative to the camera
@@ -330,7 +336,7 @@ public class VRCamera {
 			GL11.glTranslated(0.04, -0.15, -0.025);
 			GL11.glScaled(armScl * 16, armScl * 16, armScl * 16);
 			
-			drawItem(thePlayer, mc, leftHanded);
+			drawItem(thePlayer, mc, leftHanded, renderer, renderPartialTicks);
 			GL11.glPopMatrix();
 		}
 		
@@ -353,10 +359,11 @@ public class VRCamera {
 		if (data == null) return;
 		
 		Lighting.disable();
+		LightmapHelper.setLightmapCoord(15, 15);
 		GL11.glPushMatrix();
 		
 		Player player = mc.thePlayer;
-		if (mc.currentWorld == null)
+		if (mc.currentWorld == null || player == null)
 			player = BTVR.getMenuPlayer();
 		
 		if (player != null && mc.activeCamera != null) {
@@ -384,8 +391,9 @@ public class VRCamera {
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		if (!menuWorld)
-			GL11.glDisable(GL11.GL_DEPTH_TEST);
+			GL11.glDepthFunc(GL11.GL_ALWAYS);
 		VRRenderManager.bindGUI();
 		Tessellator.instance.startDrawingQuads();
 		Tessellator.instance.addVertexWithUV(UIQuad.minX, UIQuad.minY, 0, 1, 0);
@@ -393,7 +401,6 @@ public class VRCamera {
 		Tessellator.instance.addVertexWithUV(UIQuad.maxX, UIQuad.maxY, 0, 0, 1);
 		Tessellator.instance.addVertexWithUV(UIQuad.minX, UIQuad.maxY, 0, 1, 1);
 		Tessellator.instance.draw();
-		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		
 		
 		Vec3 pos;
@@ -407,10 +414,9 @@ public class VRCamera {
 		}
 		Vec3 look = a(VRHelper.getTraceVector(Config.TRACE_HAND.get()));
 		
-//		pos = pos.subtract(UIPos);
-		pos.x -= UIPos.x;
-		pos.y -= UIPos.y;
-		pos.z -= UIPos.z;
+		pos.x = UIPos.x - pos.x;
+		pos.y = UIPos.y - pos.y;
+		pos.z = UIPos.z - pos.z;
 		
 		double[] rot = VecMath.rotate(new double[]{pos.x, pos.z}, Math.toRadians(angle + 180));
 		pos = Vec3.getTempVec3(rot[0], pos.y, rot[1]);
@@ -419,7 +425,6 @@ public class VRCamera {
 		rot = VecMath.rotate(new double[]{look.x, look.z}, Math.toRadians(angle + 180));
 		look = Vec3.getTempVec3(rot[0], look.y, rot[1]);
 		
-//		HitResult res = UIQuad.func_1169_a(pos, pos.addVector(look.xCoord * -10, look.yCoord * -10, look.zCoord * -10));
 		HitResult res = UIQuad.clip(pos, pos.add(look.x * -10, look.y * -10, look.z * -10));
 		if (res != null) {
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
@@ -450,7 +455,6 @@ public class VRCamera {
 			
 			int qual = 64;
 			double d = 360d / qual;
-			GL11.glDepthFunc(GL11.GL_ALWAYS);
 			Tessellator.instance.startDrawing(GL11.GL_TRIANGLES);
 			for (int i = 0; i < qual; i++) {
 				double s = Math.sin(Math.toRadians(i * d)) * rad;
@@ -464,7 +468,6 @@ public class VRCamera {
 				Tessellator.instance.addVertex(x + s, y + c, 0);
 			}
 			Tessellator.instance.draw();
-			GL11.glDepthFunc(515);
 			
 			// TODO: I'd like to draw a line between the hand and the crosshair
 //			GL11.glLineWidth(1);
@@ -487,8 +490,9 @@ public class VRCamera {
 			data.better_than_vr$mouseOverride()[1] = Double.NaN;
 		}
 		
+		GL11.glDepthFunc(515);
 		GL11.glDisable(GL11.GL_BLEND);
 		GL11.glPopMatrix();
-		Lighting.enableLight();
+//		Lighting.enableLight();
 	}
 }

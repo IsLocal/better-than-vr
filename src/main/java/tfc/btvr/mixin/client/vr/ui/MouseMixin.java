@@ -1,6 +1,7 @@
 package tfc.btvr.mixin.client.vr.ui;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Screen;
 import org.lwjgl.input.Mouse;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -10,6 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import tfc.btvr.itf.VRScreenData;
 import tfc.btvr.lwjgl3.BTVRSetup;
 import tfc.btvr.lwjgl3.VRManager;
+import tfc.btvr.mixin.client.access.ResolutionAccessor;
 import tfc.btvr.util.ScreenUtil;
 
 import java.nio.ByteBuffer;
@@ -118,13 +120,13 @@ public abstract class MouseMixin {
 	
 		if (!VRManager.inStandby) {
 			Minecraft mc = Minecraft.getMinecraft();
-			GuiScreen scrn = mc.currentScreen;
+			Screen scrn = mc.currentScreen;
 			if (scrn != null) {
 				VRScreenData data = (VRScreenData) scrn;
 				
 				double d = data.better_than_vr$mouseOverride()[0];
 				if (!Double.isNaN(d))
-					cir.setReturnValue((int) (d * mc.resolution.width));
+					cir.setReturnValue((int) (d * ((ResolutionAccessor) mc.resolution).getGameWindow().getWidthPixels()));
 				return;
 			}
 			cir.setReturnValue(-1);
@@ -137,13 +139,13 @@ public abstract class MouseMixin {
 	
 		if (!VRManager.inStandby) {
 			Minecraft mc = Minecraft.getMinecraft();
-			GuiScreen scrn = mc.currentScreen;
+			Screen scrn = mc.currentScreen;
 			if (scrn != null) {
 				VRScreenData data = (VRScreenData) scrn;
 				
 				double d = data.better_than_vr$mouseOverride()[1];
 				if (!Double.isNaN(d))
-					cir.setReturnValue((int) (d * mc.resolution.height));
+					cir.setReturnValue((int) (d * ((ResolutionAccessor) mc.resolution).getGameWindow().getHeightPixels()));
 				return;
 			}
 			cir.setReturnValue(-1);

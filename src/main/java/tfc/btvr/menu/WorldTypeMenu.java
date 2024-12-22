@@ -12,7 +12,10 @@ public class WorldTypeMenu extends WorldTypeOverworld {
 	public WorldTypeMenu(String languageKey) {
 //		super(languageKey, Weathers.OVERWORLD_CLEAR, new WindManagerGeneric(), SeasonConfig.builder().withSingleSeason(Seasons.OVERWORLD_SUMMER).build());
 		super(
-				Properties.of(languageKey)
+//				Properties.of(languageKey)
+//						.defaultWeather(Weathers.OVERWORLD_CLEAR)
+//						.brightnessRamp(WorldTypeOverworld.createLightRamp())
+				WorldTypeOverworld.defaultProperties(languageKey)
 						.defaultWeather(Weathers.OVERWORLD_CLEAR)
 		);
 	}

@@ -2,18 +2,17 @@ package tfc.btvr.util.config.gui.menu;
 
 import com.google.common.collect.Lists;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.options.components.ButtonComponent;
 import net.minecraft.client.gui.options.components.OptionsComponent;
-import net.minecraft.client.render.FontRenderer;
-import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.Font;
+import net.minecraft.client.render.tessellator.Tessellator;
 import net.minecraft.core.lang.I18n;
-import net.minecraft.core.sound.SoundType;
+import net.minecraft.core.sound.SoundCategory;
 import org.lwjgl.opengl.GL11;
 import tfc.btvr.menu.MenuWorld;
 import tfc.btvr.util.config.gui.helper.MenuHelper;
 
 public class MenuWorldSelectionComponent implements OptionsComponent {
-	protected static final Minecraft mc = Minecraft.getMinecraft(ButtonComponent.class);
+	protected static final Minecraft mc = Minecraft.getMinecraft();
 	
 	DropdownElement dropdownElement = new DropdownElement(
 			0, 0, 0,
@@ -36,7 +35,7 @@ public class MenuWorldSelectionComponent implements OptionsComponent {
 	
 	@Override
 	public void render(int x, int y, int width, int relativeMouseX, int relativeMouseY) {
-		FontRenderer fontrenderer = mc.fontRenderer;
+		Font fontrenderer = mc.font;
 		String s = I18n.getInstance().translateKey(this.translationKey);
 		int i = -1;
 		if (relativeMouseX >= 0 && relativeMouseX <= width && relativeMouseY >= 2 && relativeMouseY <= this.getHeight() - 2) {
@@ -73,7 +72,7 @@ public class MenuWorldSelectionComponent implements OptionsComponent {
 		
 		MenuHelper.drawButton(
 				mc,
-				x + mc.fontRenderer.getStringWidth(c) + 3, y,
+				x + mc.font.getStringWidth(c) + 3, y,
 				0,
 				relativeButtonX, relativeButtonY,
 				hover, c
@@ -100,7 +99,7 @@ public class MenuWorldSelectionComponent implements OptionsComponent {
 	public void onMouseClick(int mouseButton, int x, int y, int width, int relativeMouseX, int relativeMouseY) {
 		if (relativeMouseX >= width - 120 && relativeMouseX <= width) {
 			if (relativeMouseY >= 2 && relativeMouseY <= 22) {
-				mc.sndManager.playSound("random.click", SoundType.GUI_SOUNDS, 1.0F, 1.0F);
+				mc.sndManager.playSound("random.click", SoundCategory.GUI_SOUNDS, 1.0F, 1.0F);
 				dropdownElement.open = !dropdownElement.open;
 				if (dropdownElement.open)
 					dropdownElement.collect(() -> {
@@ -114,8 +113,12 @@ public class MenuWorldSelectionComponent implements OptionsComponent {
 			} else {
 				if (dropdownElement.open) {
 					int elem = (relativeMouseY - (20 * 2)) / 20;
-					if (relativeMouseY > 40)
-						System.out.println(elem);
+					if (relativeMouseY > 40) {
+						if (elem < dropdownElement.strs.size()) {
+							String element = dropdownElement.strs.get(elem);
+							MenuWorld.selected(element);
+						}
+					}
 				}
 			}
 		}

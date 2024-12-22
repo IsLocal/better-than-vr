@@ -1,6 +1,6 @@
 package tfc.btvr.util.config.gui;
 
-import net.minecraft.client.gui.GuiSlider;
+import net.minecraft.client.gui.SliderElement;
 import net.minecraft.client.gui.options.components.ButtonComponent;
 
 import java.util.function.Consumer;
@@ -10,7 +10,7 @@ public class DecimalOptionComponent extends ButtonComponent {
 	Consumer<Double> setter;
 	Supplier<Double> current;
 	Double def;
-	private final GuiSlider slider;
+	private final SliderElement slider;
 	String suffix;
 	double min, max;
 	
@@ -29,7 +29,7 @@ public class DecimalOptionComponent extends ButtonComponent {
 		this.min = min;
 		this.max = max;
 		
-		this.slider = new GuiSlider(0, 0, 0, 150, 20, current.get().floatValue() + suffix, current.get().floatValue());
+		this.slider = new SliderElement(0, 0, 0, 150, 20, current.get().floatValue() + suffix, current.get().floatValue());
 		this.suffix = suffix;
 		setText();
 	}

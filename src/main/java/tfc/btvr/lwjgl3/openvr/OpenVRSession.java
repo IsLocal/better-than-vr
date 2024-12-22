@@ -9,6 +9,7 @@ import org.lwjgl.openvr.VRSystem;
 import org.lwjgl.system.MemoryStack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tfc.btvr.IO;
 import tfc.btvr.lwjgl3.BTVRSetup;
 
 import java.io.File;
@@ -29,7 +30,7 @@ public class OpenVRSession {
 				if (is != null) {
 					fl.getParentFile().mkdirs();
 					FileOutputStream fos = new FileOutputStream(fl);
-					fos.write(is.readAllBytes());
+					fos.write(IO.readAllBytes(is));
 					fos.flush();
 					fos.close();
 					is.close();

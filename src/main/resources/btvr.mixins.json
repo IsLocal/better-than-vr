@@ -14,10 +14,13 @@
   "client": [
     "client.OptionMenuMixin",
     "client.RenderGlobalAccessor",
+    "client.access.GLFWWindowMixin",
+    "client.access.ResolutionAccessor",
     "client.vr.core.GLHelperMixin",
     "client.vr.core.MinecraftMixin",
     "client.vr.core.ShaderRendererMixin",
     "client.vr.core.VRCameraMixin",
+    "client.vr.display.ARBFBOMixin",
     "client.vr.display.GL30Mixin",
     "client.vr.model.LivingRendererAccessor",
     "client.vr.model.WorldRendererMixin",

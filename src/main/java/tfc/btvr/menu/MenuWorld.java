@@ -16,6 +16,7 @@ import net.minecraft.core.entity.player.Player;
 import net.minecraft.core.enums.LightLayer;
 import net.minecraft.core.world.Dimension;
 import org.lwjgl.opengl.GL11;
+import tfc.btvr.IO;
 import tfc.btvr.util.config.Config;
 
 import java.io.IOException;
@@ -49,7 +50,7 @@ public class MenuWorld {
 	
 	public static ArrayList<String> listWorlds() throws IOException {
 		InputStream is = MenuWorld.class.getClassLoader().getResourceAsStream("btvr/menu/worlds.csv");
-		byte[] data = is.readAllBytes();
+		byte[] data = IO.readAllBytes(is);
 		try {
 			is.close();
 		} catch (Throwable err) {
@@ -69,15 +70,20 @@ public class MenuWorld {
 	}
 	
 	protected static String chooseRow() throws IOException {
-		ArrayList<String> lines = listWorlds();
-		
-		double v = Math.random() * (lines.size());
-		int i = (int) v;
-		String ln = lines.get(i);
-		
-		String[] splat = ln.split(",");
-		// TODO: return a world info instead of a string
-		return splat[2].trim();
+		switch (Config.MENU_MODE.get()) {
+			case CHOICE:
+				// TODO
+			default:
+				ArrayList<String> lines = listWorlds();
+				
+				double v = Math.random() * (lines.size());
+				int i = (int) v;
+				String ln = lines.get(i);
+				
+				String[] splat = ln.split(",");
+				// TODO: return a world info instead of a string
+				return splat[2].trim();
+		}
 	}
 	
 	public static MenuWorld select(Minecraft mc) {
@@ -163,7 +169,7 @@ public class MenuWorld {
 		}
 		
 		RenderGlobal renderglobal = mc.renderGlobal;
-		renderglobal.changeWorld((WorldClient) wrld.dummy);
+		renderglobal.changeWorld(wrld.dummy);
 		
 		return wrld;
 	}
@@ -172,11 +178,16 @@ public class MenuWorld {
 	
 	int list1 = 0;
 	
+	public static void selected(String element) {
+		// TODO
+	}
+	
 	public void draw(float renderPartialTicks, Minecraft mc) {
 //		BlockModelRenderBlocks.setRenderBlocks(blocks);
+		
 		BlockModel.setRenderBlocks(blocks);
 		Tessellator tessellator = Tessellator.instance;
-		
+
 //		mc.renderEngine.bindTexture(mc.renderEngine.getTexture("/terrain.png"));
 		TextureRegistry.blockAtlas.bind();
 		Lighting.disable();

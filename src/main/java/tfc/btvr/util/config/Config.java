@@ -91,6 +91,9 @@ public class Config {
 	public static final BooleanOption SMOOTH_ROTATION = new BooleanOption("smooth_rotation", false);
 	public static final BooleanOption EXTRA_SMOOTH_ROTATION = new BooleanOption("extra_smooth_rotation", false);
 	public static final DecimalOption ROTATION_SPEED = new DecimalOption("rotation_speed", 22.5);
+	public static final int MENU_RES_X = 1920;
+	public static final int MENU_RES_Y = 1080;
+	public static final int OVERLAY_RES = 960 * 2;
 	
 	public static final ModeOption MODE = new ModeOption("mode", BTVRSetup.getDefaultMode());
 	public static final MenuModeOption MENU_MODE = new MenuModeOption("menu_mode", MenuModeOption.MenuMode.RANDOM);

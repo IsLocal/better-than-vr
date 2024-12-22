@@ -25,8 +25,10 @@ public class VRRenderManager {
 	public static void init(IntBuffer w, IntBuffer h) {
 		switch (VRManager.getActiveMode()) {
 			case STEAM_VR:
-				leftEye = new SEye(0, w.get(0), h.get(0));
-				rightEye = new SEye(1, w.get(0), h.get(0));
+				int wi = w.get(0);
+				int hi = h.get(0);
+				leftEye = new SEye(0, wi, hi);
+				rightEye = new SEye(1, wi, hi);
 				break;
 			case OCULUS_VR:
 				OVRCompositor.checkEyeSize(OVR.ovrEye_Left, w, h);
@@ -50,6 +52,10 @@ public class VRRenderManager {
 		if (eye == 0) leftEye.activate();
 		else if (eye == 1) rightEye.activate();
 		else Eye.deactivate();
+		
+//		if (Minecraft.getMinecraft().currentWorld != null) {
+//			System.out.println("InWorld");
+//		}
 	}
 	
 	private static int fbWidth = 0;
@@ -73,8 +79,10 @@ public class VRRenderManager {
 	public static void startFrame(ScaledResolution resolution, double renderScale, boolean useLinearFiltering, double pct) {
 		VRRenderManager.pct = pct;
 		
-		int width = resolution.getWidthScreenCoords();
-		int height = resolution.getHeightScreenCoords();
+//		int width = resolution.getWidthScreenCoords();
+//		int height = resolution.getHeightScreenCoords();
+		int width = Config.MENU_RES_X;
+		int height = Config.MENU_RES_Y;
 		
 		int scaledWidth = (int) (renderScale * width);
 		int scaledHeight = (int) (renderScale * height);
@@ -110,7 +118,7 @@ public class VRRenderManager {
 			overlayFbo.generate();
 			overlayFbo.bind();
 			overlayTex.bind();
-			int overlayWidth = 960;
+			int overlayWidth = Config.OVERLAY_RES;
 			GL11.glTexImage2D(3553, 0, 6408, overlayWidth, overlayWidth / 2, 0, 6408, 5121, (ByteBuffer) null);
 			GL11.glTexParameteri(3553, 10241, GL11.GL_NEAREST);
 			GL11.glTexParameteri(3553, 10240, GL11.GL_NEAREST);
