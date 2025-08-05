@@ -133,23 +133,26 @@ dependencies {
     implementation("org.lwjgl:lwjgl-stb:$lwjglVersion")
 
 
-    extraLibs("org.lwjgl:lwjgl-openvr")
-    extraLibs("org.lwjgl:lwjgl-ovr")
+    extraLibs("org.lwjgl:lwjgl-openvr:$lwjglVersion")
+    extraLibs("org.lwjgl:lwjgl-ovr:$lwjglVersion")
 
     for (s in arrayOf<String>(
-    "natives-linux",
-    "natives-linux-arm64",
-    "natives-macos",
-    "natives-windows",
-    "natives-windows-x86")) {
-    extraLibs("org.lwjgl:lwjgl-openvr::$s")
-}
+        "natives-linux",
+        "natives-linux-arm64",
+        "natives-macos",
+        "natives-windows",
+        "natives-windows-x86")) {
+        extraLibs("org.lwjgl:lwjgl-openvr:$lwjglVersion:$s")
+    }
+
     for (s in arrayOf<String>(
-    "natives-windows",
-    "natives-windows-x86",
+        "natives-windows",
+        "natives-windows-x86",
     )) {
-    extraLibs ("org.lwjgl:lwjgl-ovr::$s")
-}
+        extraLibs("org.lwjgl:lwjgl-ovr:$lwjglVersion:$s")
+    }
+
+
 
     configurations.implementation.get().extendsFrom(extraLibs)
     configurations.runtimeOnly.get().extendsFrom(extraLibs)
@@ -170,7 +173,17 @@ tasks.jar {
     from("LICENSE") {
         rename { "${it}_${base.archivesName.get()}" }
     }
+    from(
+        extraLibs.resolve().map {
+            if (it.isDirectory) it else zipTree(it)
+        }
+    )
 }
+
+tasks.withType<Jar>().configureEach {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
 
 configurations.configureEach {
     // Removes LWJGL2 dependencies
